@@ -2,6 +2,7 @@ import TitleSection from "./TitleSection";
 import { Button } from "./ui/button";
 import ProductCard from "./ProductCard";
 import { useNavigate } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
 
 const ExploreOurProduct = () => {
   const navigate = useNavigate();
@@ -12,8 +13,8 @@ const ExploreOurProduct = () => {
       <ul className="grid grid-cols-4 gap-x-[30px] gap-y-[60px] mt-[60px]">
         {Array(8)
           .fill(0)
-          .map((item, index) => (
-            <ProductCard key={index} />
+          .map(() => (
+            <ProductCard key={uuidv4()} />
           ))}
       </ul>
       <Button

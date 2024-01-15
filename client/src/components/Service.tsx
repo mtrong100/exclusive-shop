@@ -29,7 +29,10 @@ const Service = () => {
   return (
     <div className="flex items-center justify-around">
       {serviceContent.map((item: TServiceContent) => (
-        <div className="flex flex-col gap-5 justify-center items-center">
+        <div
+          key={item.title}
+          className="flex flex-col gap-5 justify-center items-center"
+        >
           <div className="w-[70px] h-[70px] flex items-center justify-center text-white rounded-full bg-primary text-wrap">
             {item.icon}
           </div>

@@ -27,12 +27,12 @@ const Header = () => {
             return (
               <Link
                 to={item.path}
+                key={item.title}
                 className={`${
                   isActive
                     ? "font-medium border-b border-black"
                     : "font-normal hover:border-b hover:border-black"
                 }  cursor-pointer`}
-                key={item.title}
               >
                 {item.title}
               </Link>
@@ -93,6 +93,7 @@ const Header = () => {
                 </Link>
                 {menuDropdown.map((item: TMenuDropdown) => (
                   <Link
+                    key={item.title}
                     to={item.path}
                     className="flex items-center gap-3 h-[45px] hover:bg-gray-200 pl-3 rounded-md"
                   >
