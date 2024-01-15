@@ -1,4 +1,4 @@
-import ExploreOurProduct from "@/ExploreOurProduct";
+import ExploreOurProduct from "@/components/ExploreOurProduct";
 import Banner from "@/components/Banner";
 import BestSellingProducts from "@/components/BestSellingProducts";
 import BrowseByCategory from "@/components/BrowseByCategory";

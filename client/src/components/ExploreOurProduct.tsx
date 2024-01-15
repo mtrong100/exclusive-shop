@@ -1,6 +1,6 @@
-import TitleSection from "./components/TitleSection";
-import { Button } from "./components/ui/button";
-import ProductCard from "./components/ProductCard";
+import TitleSection from "./TitleSection";
+import { Button } from "./ui/button";
+import ProductCard from "./ProductCard";
 import { useNavigate } from "react-router-dom";
 
 const ExploreOurProduct = () => {

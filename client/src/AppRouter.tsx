@@ -1,21 +1,24 @@
-import { Routes, Route } from "react-router-dom";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Home from "./pages/Home";
-import MainLayout from "./components/layouts/MainLayout";
 import Wishlist from "./pages/Wishlist";
-import Cart from "./pages/Cart";
-import Checkout from "./pages/Checkout";
-import Profile from "./pages/Profile";
 import Shop from "./pages/Shop";
-import MyOrder from "./pages/MyOrder";
-import About from "./pages/About";
+import Register from "./pages/Register";
+import Profile from "./pages/Profile";
 import ProducDetail from "./pages/ProducDetail";
+import MyOrder from "./pages/MyOrder";
+import ManageUser from "./pages/admin/user/ManageUser";
+import ManageProduct from "./pages/admin/product/ManageProduct";
+import ManageOrder from "./pages/admin/order/ManageOrder";
+import ManageCategory from "./pages/admin/category/ManageCategory";
+import MainLayout from "./components/layouts/MainLayout";
+import Login from "./pages/Login";
+import Home from "./pages/Home";
+import EditProduct from "./pages/admin/product/EditProduct";
 import DashboardLayout from "./components/layouts/DashboardLayout";
 import Dashboard from "./pages/admin/Dashboard";
-import ManageProduct from "./pages/admin/product/ManageProduct";
+import Checkout from "./pages/Checkout";
+import Cart from "./pages/Cart";
 import AddNewProduct from "./pages/admin/product/AddNewProduct";
-import EditProduct from "./pages/admin/product/EditProduct";
+import About from "./pages/About";
+import { Routes, Route } from "react-router-dom";
 
 const AppRouter = () => {
   return (
@@ -39,6 +42,9 @@ const AppRouter = () => {
         <Route path="/manage-product" element={<ManageProduct />} />
         <Route path="/manage-product/add-new" element={<AddNewProduct />} />
         <Route path="/manage-product/edit/:id" element={<EditProduct />} />
+        <Route path="/manage-category" element={<ManageCategory />} />
+        <Route path="/manage-order" element={<ManageOrder />} />
+        <Route path="/manage-user" element={<ManageUser />} />
       </Route>
     </Routes>
   );

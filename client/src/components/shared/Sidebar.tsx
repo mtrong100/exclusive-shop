@@ -1,9 +1,11 @@
 import { sidebarLinks } from "@/constanst";
 import { TMenuDropdown } from "@/types/general-types";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
 
 const Sidebar = () => {
+  const location = useLocation();
+
   return (
     <aside className="sticky top-0 left-0 w-[280px] h-screen bg-slate-50 p-4 border-r">
       <Link
