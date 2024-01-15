@@ -15,3 +15,8 @@ export type TMenuDropdown = {
   icon: React.ReactNode;
   path: string;
 };
+
+export type TSortType = {
+  title: string;
+  value: string;
+};

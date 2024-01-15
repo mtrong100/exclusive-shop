@@ -4,22 +4,10 @@ import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
-
-const demoCategories: string[] = [
-  "electronics",
-  "clothing",
-  "home and kitchen",
-  "books",
-  "sports and outdoors",
-  "beauty and personal care",
-  "toys and games",
-  "automotive",
-  "health and household",
-  "grocery",
-];
+import { demoCategories } from "@/constanst";
 
 const Shop = () => {
-  const [category, setCategory] = useState<string>();
+  const [category, setCategory] = useState<string>("");
 
   // FIX SCROLL BUG
   useEffect(() => {

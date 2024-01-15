@@ -1,6 +1,6 @@
 import { menuDropdown, navLinks } from "@/constanst";
 import { TMenuDropdown, TNavLink } from "@/types/general-types";
-import { Heart, Search, ShoppingCart } from "lucide-react";
+import { Heart, LayoutDashboard, Search, ShoppingCart } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Popover,
@@ -84,6 +84,13 @@ const Header = () => {
             </PopoverTrigger>
             <PopoverContent className="absolute -right-5 w-[190px] rounded-md p-1">
               <ul className="flex flex-col">
+                <Link
+                  to="/dashboard"
+                  className="flex items-center gap-3 h-[45px] hover:bg-gray-200 pl-3 rounded-md"
+                >
+                  <LayoutDashboard size={20} />
+                  Dashboard
+                </Link>
                 {menuDropdown.map((item: TMenuDropdown) => (
                   <Link
                     to={item.path}
