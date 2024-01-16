@@ -13,6 +13,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { useAuth } from "@/components/auth-context";
+import { useNavigate } from "react-router-dom";
 
 const formSchema = z.object({
   name: z
@@ -30,6 +32,9 @@ const formSchema = z.object({
 });
 
 const Checkout = () => {
+  const navigate = useNavigate();
+  const { currentUser } = useAuth();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -41,8 +46,6 @@ const Checkout = () => {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
     console.log(values);
   }
 

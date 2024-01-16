@@ -4,11 +4,16 @@ import "./globals.css";
 import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import { store } from "./redux/store.ts";
+import { Toaster } from "./components/ui/sonner.tsx";
+import { AuthProvider } from "./components/auth-context.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <BrowserRouter>
     <Provider store={store}>
-      <App />
+      <AuthProvider>
+        <App />
+      </AuthProvider>
+      <Toaster />
     </Provider>
   </BrowserRouter>
 );

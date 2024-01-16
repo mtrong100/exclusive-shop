@@ -11,9 +11,21 @@ import { X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/components/auth-context";
+import { toast } from "sonner";
 
 const Cart = () => {
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
+
+  const handleMoveToCheckout = () => {
+    if (!currentUser) {
+      navigate("/login");
+      toast.warning("You don't have an account. Please login first");
+    } else {
+      navigate("/checkout");
+    }
+  };
 
   return (
     <section className="mt-[80px] mb-[140px]">
@@ -90,7 +102,7 @@ const Cart = () => {
             </li>
           </ul>
           <Button
-            onClick={() => navigate("/checkout")}
+            onClick={handleMoveToCheckout}
             className="h-[50px] px-10 mt-[16px] mx-auto flex"
           >
             Procees to checkout

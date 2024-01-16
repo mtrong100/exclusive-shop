@@ -1,5 +1,5 @@
 import authBanner from "../assets/images/auth-banner.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -13,6 +13,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { loginApi } from "@/services/authService";
+import { toast } from "sonner";
+import { useAuth } from "@/components/auth-context";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email format" }),
@@ -22,6 +25,9 @@ const formSchema = z.object({
 });
 
 const Login = () => {
+  const { setCurrentUser } = useAuth();
+  const navigate = useNavigate();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -30,10 +36,22 @@ const Login = () => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      const requestData = {
+        ...values,
+      };
+
+      const data = await loginApi(requestData);
+      localStorage.setItem("EXCLUSIVE_USER", JSON.stringify(data?.results));
+      localStorage.setItem("EXCLUSIVE_TOKEN", JSON.stringify(data?.token));
+      setCurrentUser({ ...data?.results, token: data?.token });
+      toast.success(data?.message);
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+      toast.error("Faild to create an account. Try again");
+    }
   }
 
   return (

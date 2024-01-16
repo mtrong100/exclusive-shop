@@ -40,7 +40,12 @@ export const login = async (req, res, next) => {
     }
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-    const { password: pass, ...rest } = user._doc;
+    const {
+      password: pass,
+      resetPasswordOtp,
+      resetPasswordExpires,
+      ...rest
+    } = user._doc;
 
     return res
       .status(201)
@@ -70,7 +75,12 @@ export const googleLogin = async (req, res, next) => {
       return res.status(201).json({ message: "create user sucessfully" });
     } else {
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-      const { password: pass, ...rest } = user._doc;
+      const {
+        password: pass,
+        resetPasswordOtp,
+        resetPasswordExpires,
+        ...rest
+      } = user._doc;
 
       return res.status(200).json({
         message: "login user sucessfully",

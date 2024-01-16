@@ -1,15 +1,29 @@
 import { menuDropdown, navLinks } from "@/constanst";
 import { TMenuDropdown, TNavLink } from "@/types/general-types";
-import { Heart, LayoutDashboard, Search, ShoppingCart } from "lucide-react";
+import {
+  Heart,
+  LayoutDashboard,
+  LogOut,
+  Search,
+  ShoppingCart,
+} from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useAuth } from "../auth-context";
 
 const Header = () => {
+  const { currentUser, setCurrentUser } = useAuth();
   const location = useLocation();
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    localStorage.removeItem("EXCLUSIVE_USER");
+    localStorage.removeItem("EXCLUSIVE_TOKEN");
+  };
 
   return (
     <header className="p-5 border-b max-w-[1920px] mx-auto">
@@ -72,38 +86,51 @@ const Header = () => {
           </div>
 
           {/* USER AVATAR */}
-          <Popover>
-            <PopoverTrigger asChild>
-              <div className="w-[30px] h-[30px] border rounded-full flex-shrink-0 cursor-pointer">
-                <img
-                  src="https://source.unsplash.com/random"
-                  alt="user-avatar"
-                  className="img-cover rounded-full"
-                />
-              </div>
-            </PopoverTrigger>
-            <PopoverContent className="absolute -right-5 w-[190px] rounded-md p-1">
-              <ul className="flex flex-col">
-                <Link
-                  to="/dashboard"
-                  className="flex items-center gap-3 h-[45px] hover:bg-gray-200 pl-3 rounded-md"
-                >
-                  <LayoutDashboard size={20} />
-                  Dashboard
-                </Link>
-                {menuDropdown.map((item: TMenuDropdown) => (
-                  <Link
-                    key={item.title}
-                    to={item.path}
-                    className="flex items-center gap-3 h-[45px] hover:bg-gray-200 pl-3 rounded-md"
+          {currentUser && (
+            <Popover>
+              <PopoverTrigger asChild>
+                <div className="w-[30px] h-[30px] border rounded-full flex-shrink-0 cursor-pointer">
+                  <img
+                    src={currentUser?.avatar}
+                    alt={currentUser?.name}
+                    className="img-cover rounded-full"
+                  />
+                </div>
+              </PopoverTrigger>
+              <PopoverContent className="absolute -right-5 w-[190px] rounded-md p-1">
+                <ul className="flex flex-col">
+                  {currentUser && currentUser.isAdmin && (
+                    <Link
+                      to="/dashboard"
+                      className="flex items-center gap-3 h-[45px] hover:bg-gray-200 pl-3 rounded-md"
+                    >
+                      <LayoutDashboard size={20} />
+                      Dashboard
+                    </Link>
+                  )}
+
+                  {menuDropdown.map((item: TMenuDropdown) => (
+                    <Link
+                      key={item.title}
+                      to={item.path}
+                      className="flex items-center gap-3 h-[45px] hover:bg-gray-200 pl-3 rounded-md"
+                    >
+                      {item.icon}
+                      {item.title}
+                    </Link>
+                  ))}
+
+                  <li
+                    onClick={handleLogout}
+                    className="flex items-center gap-3 h-[45px] cursor-pointer hover:bg-gray-200 pl-3 rounded-md"
                   >
-                    {item.icon}
-                    {item.title}
-                  </Link>
-                ))}
-              </ul>
-            </PopoverContent>
-          </Popover>
+                    <LogOut size={20} />
+                    Logout
+                  </li>
+                </ul>
+              </PopoverContent>
+            </Popover>
+          )}
         </div>
       </div>
     </header>

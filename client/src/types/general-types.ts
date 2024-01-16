@@ -20,3 +20,16 @@ export type TSortType = {
   title: string;
   value: string;
 };
+
+export type TRegisterRequest = {
+  name: string;
+  email: string;
+  password?: string;
+  avatar: string;
+  isAdmin: boolean;
+};
+
+export type TLoginRequest = {
+  email: string;
+  password: string;
+};
