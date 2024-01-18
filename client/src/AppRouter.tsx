@@ -24,6 +24,7 @@ const Checkout = lazy(() => import("./pages/Checkout"));
 const Cart = lazy(() => import("./pages/Cart"));
 const AddNewProduct = lazy(() => import("./pages/admin/product/AddNewProduct"));
 const About = lazy(() => import("./pages/About"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 
 const mainRoutes = [
   { path: "/login", element: <Login /> },
@@ -37,6 +38,7 @@ const mainRoutes = [
   { path: "/order", element: <MyOrder /> },
   { path: "/about", element: <About /> },
   { path: "/product/:id", element: <ProducDetail /> },
+  { path: "/forgot-password", element: <ForgotPassword /> },
 ];
 
 const adminRoutes = [

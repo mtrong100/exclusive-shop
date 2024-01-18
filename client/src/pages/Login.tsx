@@ -45,7 +45,7 @@ const Login = () => {
       const data = await loginApi(requestData);
       localStorage.setItem("EXCLUSIVE_USER", JSON.stringify(data?.results));
       localStorage.setItem("EXCLUSIVE_TOKEN", JSON.stringify(data?.token));
-      setCurrentUser({ ...data?.results, token: data?.token });
+      setCurrentUser(data?.results);
       toast.success(data?.message);
       navigate("/");
     } catch (error) {
@@ -114,7 +114,10 @@ const Login = () => {
                 Log In
               </Button>
 
-              <Link className="text-primary font-normal hover:underline" to="/">
+              <Link
+                className="text-primary font-normal hover:underline"
+                to="/forgot-password"
+              >
                 Forget Password?
               </Link>
             </div>

@@ -1,8 +1,8 @@
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
 import { errorHandler } from "../utils/errorHandler.js";
-import { autoGeneratePassword } from "../utils/hepler.js";
+import { autoGeneratePassword, generateToken } from "../utils/hepler.js";
+import { sendOtpToEmail } from "../services/sendEmail.js";
 
 export const register = async (req, res, next) => {
   try {
@@ -39,7 +39,8 @@ export const login = async (req, res, next) => {
       return next(errorHandler(400, "wrong password"));
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+    const token = await generateToken({ id: user._id, isAdmin: user.isAdmin });
+
     const {
       password: pass,
       resetPasswordOtp,
@@ -74,7 +75,11 @@ export const googleLogin = async (req, res, next) => {
 
       return res.status(201).json({ message: "create user sucessfully" });
     } else {
-      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+      const token = await generateToken({
+        id: user._id,
+        isAdmin: user.isAdmin,
+      });
+
       const {
         password: pass,
         resetPasswordOtp,
@@ -88,6 +93,75 @@ export const googleLogin = async (req, res, next) => {
         token,
       });
     }
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const resetPassword = async (req, res, next) => {
+  const { email, password, confirmPassword, otp } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+
+    // Check user
+    if (!user) {
+      return next(errorHandler(404, "User not found"));
+    }
+
+    // Check if OTP expired
+    if (user.resetPasswordExpires < Date.now()) {
+      return next(errorHandler(400, "OTP has expired"));
+    }
+
+    // Check if OTP not match
+    if (user.resetPasswordOtp !== otp) {
+      return next(errorHandler(400, "Invalid OTP"));
+    }
+
+    // Validate and update the password
+    if (password !== confirmPassword) {
+      return next(
+        errorHandler(400, "Password and confirm password do not match")
+      );
+    }
+
+    // Update password and reset OTP & expire time
+    user.password = bcrypt.hashSync(password, 10);
+    user.resetPasswordExpires = null;
+    user.resetPasswordOtp = null;
+
+    await user.save();
+    return res.status(200).json({ message: "Password reset successful" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const sendOtp = async (req, res, next) => {
+  const { email } = req.body;
+  console.log(email);
+
+  try {
+    const user = await User.findOne({ email });
+
+    // Check user
+    if (!user) {
+      return next(errorHandler(404, "not found"));
+    }
+
+    // Generate OTP code and expire time
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    user.resetPasswordOtp = otp;
+    user.resetPasswordExpires = new Date(Date.now() + 5 * 60 * 1000);
+
+    await user.save();
+    await sendOtpToEmail(user.email, otp);
+
+    return res
+      .status(200)
+      .json({ message: "OTP code has been sent to your email" });
   } catch (error) {
     next(error);
   }

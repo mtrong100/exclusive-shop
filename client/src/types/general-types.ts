@@ -33,3 +33,16 @@ export type TLoginRequest = {
   email: string;
   password: string;
 };
+
+export type TResetPasswordRequest = {
+  email: string;
+  password: string;
+  confirmPassword: string;
+  otp: string;
+};
+
+export type TUpdateUserRequest = {
+  name: string;
+  address: string;
+  phone: string;
+};

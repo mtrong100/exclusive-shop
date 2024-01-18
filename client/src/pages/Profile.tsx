@@ -12,29 +12,69 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { toast } from "sonner";
+import { getUserDetailApi, updateUserApi } from "@/services/userService";
+import { useAuth } from "@/components/auth-context";
+import { useEffect } from "react";
 
 const formSchema = z.object({
-  name: z.string().min(2).max(50),
-  phoneNumber: z.string().regex(/^\d{10}$/),
-  address: z.string().min(5).max(100),
-  email: z.string().email(),
+  name: z
+    .string()
+    .min(2, { message: "Name must be longer than 2 characters" })
+    .max(50, { message: "Name can not exceed 50 characters" }),
+  phone: z.string().refine((value) => /^\d{10}$/.test(value), {
+    message: "Phone number must be 10 digits",
+  }),
+  address: z
+    .string()
+    .min(5, { message: "Address must be longer than 2 characters" })
+    .max(100, { message: "Name can not exceed 100 characters" }),
 });
 
 const Profile = () => {
+  const { currentUser, setCurrentUser } = useAuth();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      phoneNumber: "",
+      phone: "",
       address: "",
-      email: "",
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+  // FULL-FILL DATA
+  useEffect(() => {
+    async function fetchData() {
+      const token = JSON.parse(localStorage.getItem("EXCLUSIVE_TOKEN") || "");
+      const data = await getUserDetailApi(currentUser?._id as string, token);
+      console.log(data);
+      form.reset({
+        name: data?.name,
+        phone: data?.phone,
+        address: data?.address,
+      });
+    }
+    fetchData();
+  }, [currentUser?._id, form]);
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      const request = {
+        ...values,
+      };
+
+      const token = JSON.parse(localStorage.getItem("EXCLUSIVE_TOKEN") || "");
+      const data = await updateUserApi(
+        currentUser?._id as string,
+        token,
+        request
+      );
+      setCurrentUser(data?.results);
+      toast.success(data?.message);
+    } catch (error) {
+      toast.error("Failed to update profile. Try again");
+    }
   }
 
   return (
@@ -71,24 +111,6 @@ const Profile = () => {
 
               <FormField
                 control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email Address</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter your email address"
-                        className="h-[50px] border-gray-500"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
                 name="address"
                 render={({ field }) => (
                   <FormItem>
@@ -107,7 +129,7 @@ const Profile = () => {
 
               <FormField
                 control={form.control}
-                name="phoneNumber"
+                name="phone"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Phone Number</FormLabel>
