@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { getUserDetailApi, updateUserApi } from "@/services/userService";
 import { useAuth } from "@/components/auth-context";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const formSchema = z.object({
   name: z
@@ -32,6 +33,7 @@ const formSchema = z.object({
 });
 
 const Profile = () => {
+  const navigate = useNavigate();
   const { currentUser, setCurrentUser } = useAuth();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -48,7 +50,6 @@ const Profile = () => {
     async function fetchData() {
       const token = JSON.parse(localStorage.getItem("EXCLUSIVE_TOKEN") || "");
       const data = await getUserDetailApi(currentUser?._id as string, token);
-      console.log(data);
       form.reset({
         name: data?.name,
         phone: data?.phone,
@@ -147,6 +148,7 @@ const Profile = () => {
             </div>
             <div className="mt-5 flex items-center justify-end gap-5">
               <Button
+                onClick={() => navigate("/forgot-password")}
                 type="button"
                 variant="outline"
                 className="h-[50px] px-5 border-gray-500"
