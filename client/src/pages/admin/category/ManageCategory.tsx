@@ -7,10 +7,13 @@ import { TSortType } from "@/types/general-types";
 import { sortTypes } from "@/constanst";
 import { Search } from "lucide-react";
 import { AddNewCategoryModal } from "@/modules/category/AddNewCategoryModal";
+import useGetcategories from "@/modules/category/useGetcategories";
 
 const ManageCategory = () => {
   const navigate = useNavigate();
   const [order, setOrder] = useState("desc");
+  const { isLoading, categories } = useGetcategories();
+  console.log(categories);
 
   return (
     <section>

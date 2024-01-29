@@ -22,6 +22,10 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import BackButton from "@/components/BackButton";
+import { toast } from "sonner";
+import useUploadSingleImage from "@/hooks/useUploadSingleImage";
+import { ChangeEvent } from "react";
+import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
   name: z
@@ -45,6 +49,9 @@ const formSchema = z.object({
 });
 
 const AddNewProduct = () => {
+  const { image, setImage, isUploading, handleUploadSingleImage } =
+    useUploadSingleImage();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -57,10 +64,14 @@ const AddNewProduct = () => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      //....
+      console.log(values);
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to add new product");
+    }
   }
 
   return (
@@ -160,21 +171,12 @@ const AddNewProduct = () => {
               {/* IMAGES */}
               <div className="grid grid-cols-1 gap-[30px]">
                 {/* THUMBNAIL */}
-                <FormItem>
-                  <FormLabel>Product thumbnail</FormLabel>
-                  <div className="aspect-square border border-dashed border-gray-400 rounded-md flex flex-col items-center justify-center">
-                    <label htmlFor="upload-thumbnail">
-                      <Plus size={80} className="cursor-pointer opacity-50" />
-                    </label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      name="upload-thumbnail"
-                      id="upload-thumbnail"
-                      className="hidden"
-                    />
-                  </div>
-                </FormItem>
+                <ThumbnailUpload
+                  onChange={handleUploadSingleImage}
+                  image={image}
+                  loading={isUploading}
+                  setImage={setImage}
+                />
 
                 {/* CAROUSEL IMAGES */}
                 <FormItem>
@@ -223,3 +225,43 @@ const AddNewProduct = () => {
 };
 
 export default AddNewProduct;
+
+interface ThumbnailUploadProps {
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  image: string;
+  loading: boolean;
+  setImage: (image: string) => void;
+}
+
+function ThumbnailUpload({
+  onChange,
+  image,
+  loading,
+  setImage,
+}: ThumbnailUploadProps) {
+  return (
+    <FormItem>
+      <FormLabel>Product thumbnail</FormLabel>
+      {!loading && image && (
+        <img src={image} alt="" className="aspect-square" />
+      )}
+
+      {!image && (
+        <div className="aspect-square border border-dashed border-gray-400 rounded-md flex flex-col items-center justify-center">
+          {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <label htmlFor="upload-thumbnail">
+            <Plus size={80} className="cursor-pointer opacity-50" />
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            name="upload-thumbnail"
+            id="upload-thumbnail"
+            className="hidden"
+            onChange={onChange}
+          />
+        </div>
+      )}
+    </FormItem>
+  );
+}

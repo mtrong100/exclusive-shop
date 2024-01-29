@@ -6,8 +6,8 @@ import {
   getProductDetail,
   getProductsByCategory,
   updateProduct,
-} from "../controllers/productController";
-import { verifyAdmin } from "../middlewares/verifyAdmin";
+} from "../controllers/productController.js";
+import { verifyAdmin } from "../middlewares/verifyAdmin.js";
 
 const router = express.Router();
 

@@ -10,7 +10,7 @@ export const verifyAdmin = (req, res, next) => {
   // Split the token from the "Bearer" text
   const token = tokenHeader.split(" ")[1];
 
-  jwt.verify(token, process.env.JWT_ACCESS_TOKEN, function (err, user) {
+  jwt.verify(token, process.env.JWT_SECRET, function (err, user) {
     if (err) {
       return next(errorHandler(401, "Unauthorized: Invalid token"));
     }

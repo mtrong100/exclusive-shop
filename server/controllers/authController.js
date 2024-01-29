@@ -73,7 +73,21 @@ export const googleLogin = async (req, res, next) => {
 
       await newUser.save();
 
-      return res.status(201).json({ message: "create user sucessfully" });
+      const token = await generateToken({
+        id: newUser._id,
+        isAdmin: newUser.isAdmin,
+      });
+
+      const {
+        password: pass,
+        resetPasswordOtp,
+        resetPasswordExpires,
+        ...rest
+      } = newUser._doc;
+
+      return res
+        .status(201)
+        .json({ message: "create user sucessfully", results: rest, token });
     } else {
       const token = await generateToken({
         id: user._id,

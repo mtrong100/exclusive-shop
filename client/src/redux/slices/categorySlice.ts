@@ -1,11 +1,29 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+type TState = {
+  isLoading: boolean;
+  categories: string[];
+};
+
+const initialState: TState = {
+  isLoading: false,
+  categories: [],
+};
+
 export const categorySlice = createSlice({
   name: "category",
-  initialState: {},
-  reducers: {},
+  initialState,
+  reducers: {
+    loadingCategories: (state, action) => {
+      state.isLoading = action.payload;
+    },
+    storeCategories: (state, action) => {
+      state.categories = action.payload;
+      state.isLoading = false;
+    },
+  },
 });
 
-// export const {} = categorySlice.actions;
+export const { storeCategories, loadingCategories } = categorySlice.actions;
 
 export default categorySlice.reducer;

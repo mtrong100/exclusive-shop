@@ -19,14 +19,19 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
+import { createCategoryApi } from "@/services/categoryService";
+import { useState } from "react";
 
 const formSchema = z.object({
-  name: z.string().min(2, {
+  name: z.string().toLowerCase().trim().min(2, {
     message: "Category name must be at least 2 characters.",
   }),
 });
 
 export function AddNewCategoryModal() {
+  const [open, setOpen] = useState<boolean>(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -34,14 +39,21 @@ export function AddNewCategoryModal() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      const token = JSON.parse(localStorage.getItem("EXCLUSIVE_TOKEN") || "");
+      await createCategoryApi(token, values.name);
+      toast.success("New caregory added");
+      form.reset();
+      setOpen(false);
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to add new category");
+    }
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>
           <Plus className="mr-2 h-4 w-4" /> Add new category
