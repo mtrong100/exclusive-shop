@@ -8,3 +8,9 @@ export type TUser = {
   createdAt: Date;
   updatedAt: Date;
 };
+export type TCategory = {
+  _id: string;
+  name: string;
+  createdAt: Date;
+  updatedAt: Date;
+};

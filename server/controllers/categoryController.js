@@ -1,12 +1,34 @@
 import Category from "../models/categoryModel.js";
+import { queryParams } from "../utils/constants.js";
 import { errorHandler } from "../utils/errorHandler.js";
 
 export const getCategories = async (req, res, next) => {
   try {
-    const data = await Category.find();
+    const {
+      page = queryParams.PAGE,
+      limit = queryParams.LIMIT,
+      order = queryParams.ORDER,
+      query,
+    } = req.query;
 
-    if (!data || data.length === 0) {
-      next(errorHandler(404, "not found"));
+    const filter = {};
+
+    if (query) {
+      filter.name = new RegExp(query, "i");
+    }
+
+    const options = {
+      page,
+      limit,
+      sort: {
+        createdAt: order === "asc" ? 1 : -1,
+      },
+    };
+
+    const data = await Category.paginate(filter, options);
+
+    if (!data.docs || data.docs.length === 0) {
+      next(errorHandler(404, "Not found"));
     }
 
     return res.status(200).json(data);

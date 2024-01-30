@@ -1,19 +1,66 @@
 import TitleSection from "@/components/TitleSection";
 import Checkbox from "@/components/Checkbox";
 import CategoryTable from "@/modules/category/CategoryTable";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { TSortType } from "@/types/general-types";
-import { sortTypes } from "@/constanst";
-import { Search } from "lucide-react";
+import { queryParams, sortTypes } from "@/constanst";
+import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { AddNewCategoryModal } from "@/modules/category/AddNewCategoryModal";
-import useGetcategories from "@/modules/category/useGetcategories";
+import useOnchange from "@/hooks/useOnchange";
+import useDebounce from "@/hooks/useDebounce";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
+import ReactPaginate from "react-paginate";
+import {
+  loadingCategories,
+  storeCategories,
+} from "@/redux/slices/categorySlice";
+import { getCategories } from "@/services/categoryService";
 
 const ManageCategory = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { isLoading, categories } = useAppSelector((state) => state.category);
+
   const [order, setOrder] = useState("desc");
-  const { isLoading, categories } = useGetcategories();
-  console.log(categories);
+  const [nextPage, setNextPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const { value, handleChange } = useOnchange();
+  const searchQuery = useDebounce(value, 500);
+
+  // FETCH DATA
+  useEffect(() => {
+    async function fetchData() {
+      dispatch(loadingCategories(true));
+
+      try {
+        const data = await getCategories(
+          nextPage,
+          queryParams.LIMIT,
+          order,
+          searchQuery
+        );
+
+        setTotalPages(data?.totalPages);
+        dispatch(storeCategories(data?.docs));
+      } catch (error) {
+        dispatch(storeCategories([]));
+        dispatch(loadingCategories(false));
+        setTotalPages(1);
+      }
+    }
+    fetchData();
+  }, [dispatch, nextPage, order, searchQuery]);
+
+  // CLICK PAGE
+  const handlePageClick = (event: { selected: number }) => {
+    setNextPage(event.selected + 1);
+  };
+
+  // FIX SCROLL BUG
+  useEffect(() => {
+    document.body.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, []);
 
   return (
     <section>
@@ -26,6 +73,8 @@ const ManageCategory = () => {
         <div>
           <div className="flex items-center bg-[#F5F5F5] border rounded-md p-3 w-full">
             <input
+              value={value}
+              onChange={handleChange}
               type="text"
               placeholder="What are you looking for?"
               className="w-full focus:outline-none max-w-full placeholder:text-sm bg-transparent"
@@ -34,8 +83,27 @@ const ManageCategory = () => {
           </div>
 
           <ul>
-            <CategoryTable />
+            {!isLoading && categories?.length === 0 ? (
+              <p className="text-center font-medium my-5 opacity-60">
+                No data found...
+              </p>
+            ) : (
+              <CategoryTable />
+            )}
           </ul>
+
+          {/* react-paginate */}
+          <div className="mt-8 mb-3">
+            <ReactPaginate
+              breakLabel="..."
+              nextLabel={<ChevronRight />}
+              onPageChange={handlePageClick}
+              pageRangeDisplayed={5}
+              pageCount={totalPages}
+              previousLabel={<ChevronLeft />}
+              renderOnZeroPageCount={null}
+            />
+          </div>
         </div>
 
         <div className="p-3 rounded-md shadow-md border h-fit">

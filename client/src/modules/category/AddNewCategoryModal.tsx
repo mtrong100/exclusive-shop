@@ -20,8 +20,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { createCategoryApi } from "@/services/categoryService";
+import { createCategoryApi, getCategories } from "@/services/categoryService";
 import { useState } from "react";
+import { useAppDispatch } from "@/redux/store";
+import { storeCategories } from "@/redux/slices/categorySlice";
 
 const formSchema = z.object({
   name: z.string().toLowerCase().trim().min(2, {
@@ -31,6 +33,7 @@ const formSchema = z.object({
 
 export function AddNewCategoryModal() {
   const [open, setOpen] = useState<boolean>(false);
+  const dispatch = useAppDispatch();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -43,6 +46,8 @@ export function AddNewCategoryModal() {
     try {
       const token = JSON.parse(localStorage.getItem("EXCLUSIVE_TOKEN") || "");
       await createCategoryApi(token, values.name);
+      const data = await getCategories();
+      dispatch(storeCategories(data?.docs));
       toast.success("New caregory added");
       form.reset();
       setOpen(false);

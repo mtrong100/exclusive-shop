@@ -19,29 +19,50 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useAppDispatch } from "@/redux/store";
+import { useEffect, useState } from "react";
+import { getCategories, updateCategoryApi } from "@/services/categoryService";
+import { storeCategories } from "@/redux/slices/categorySlice";
+import { toast } from "sonner";
+import { TCategory } from "@/types/main-types";
 
 const formSchema = z.object({
-  name: z.string().min(2, {
+  name: z.string().toLowerCase().trim().min(2, {
     message: "Category name must be at least 2 characters.",
   }),
 });
 
-export function EditCategoryModal() {
+export function EditCategoryModal({ item }: { item: TCategory }) {
+  const [open, setOpen] = useState<boolean>(false);
+  const dispatch = useAppDispatch();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-    },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+  useEffect(() => {
+    form.reset({
+      name: item?.name,
+    });
+  }, [form, item?.name]);
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      const token = JSON.parse(localStorage.getItem("EXCLUSIVE_TOKEN") || "");
+      await updateCategoryApi(item?._id, token, values.name);
+      const data = await getCategories();
+      dispatch(storeCategories(data?.docs));
+      toast.success("Category updated");
+      form.reset();
+      setOpen(false);
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to update category");
+    }
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Pencil size={22} className="cursor-pointer hover:text-primary" />
       </DialogTrigger>

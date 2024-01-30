@@ -7,12 +7,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Trash } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { EditCategoryModal } from "./EditCategoryModal";
+import { format } from "timeago.js";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
+import { deleteCategoryApi, getCategories } from "@/services/categoryService";
+import { storeCategories } from "@/redux/slices/categorySlice";
 
 const CategoryTable = () => {
-  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { categories } = useAppSelector((state) => state.category);
 
   const handleDelete = (id: string) => {
     Swal.fire({
@@ -25,6 +29,10 @@ const CategoryTable = () => {
       confirmButtonText: "Yes, delete it!",
     }).then(async (result) => {
       if (result.isConfirmed) {
+        const token = JSON.parse(localStorage.getItem("EXCLUSIVE_TOKEN") || "");
+        await deleteCategoryApi(id, token);
+        const data = await getCategories();
+        dispatch(storeCategories(data?.docs));
         Swal.fire("Deleted!", "Data has been deleted.", "success");
       }
     });
@@ -35,31 +43,27 @@ const CategoryTable = () => {
       <TableHeader>
         <TableRow>
           <TableHead className="w-[300px]">Name</TableHead>
-          <TableHead className="w-[300px]">Category</TableHead>
-          <TableHead>Date</TableHead>
+          <TableHead className="w-[300px] text-center">Date</TableHead>
           <TableHead className="text-right">Action</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {Array(4)
-          .fill(0)
-          .map((item, index) => (
-            <TableRow key={index}>
-              <TableCell className="font-medium capitalize">
-                LCD Monitor
-              </TableCell>
-              <TableCell className="capitalize">electronics</TableCell>
-              <TableCell>$650</TableCell>
-              <TableCell className="capitalize flex opacity-50 items-center gap-5 justify-end">
-                <EditCategoryModal />
-                <Trash
-                  onClick={() => handleDelete("768")}
-                  size={22}
-                  className="cursor-pointer hover:text-primary"
-                />
-              </TableCell>
-            </TableRow>
-          ))}
+        {categories?.map((item) => (
+          <TableRow>
+            <TableCell className="capitalize">{item?.name}</TableCell>
+            <TableCell className="text-center">
+              {format(item?.createdAt)}
+            </TableCell>
+            <TableCell className="capitalize flex opacity-50 items-center gap-5 justify-end">
+              <EditCategoryModal item={item} />
+              <Trash
+                onClick={() => handleDelete(item?._id)}
+                size={22}
+                className="cursor-pointer hover:text-primary"
+              />
+            </TableCell>
+          </TableRow>
+        ))}
       </TableBody>
     </Table>
   );

@@ -21,10 +21,9 @@ import {
 } from "./types/general-types";
 
 export const queryParams = {
-  LIMIT: 6,
+  LIMIT: 10,
   PAGE: 1,
   ORDER: "desc",
-  SORT: "createdAt",
 };
 
 export const productSizes: string[] = ["S", "M", "L", "XL"];

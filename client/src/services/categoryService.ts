@@ -1,7 +1,26 @@
+import { queryParams } from "@/constanst";
 import axios from "axios";
 
-export const getCategories = async () => {
-  const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/category/all`);
+export const getCategories = async (
+  page = queryParams.PAGE,
+  limit = queryParams.LIMIT,
+  order = queryParams.ORDER,
+  query = ""
+) => {
+  let res;
+
+  if (query) {
+    res = await axios.get(
+      `${import.meta.env.VITE_BASE_URL}/category/all?query=${query}`
+    );
+  } else {
+    res = await axios.get(
+      `${
+        import.meta.env.VITE_BASE_URL
+      }/category/all?page=${page}&limit=${limit}&order=${order}`
+    );
+  }
+
   return res.data;
 };
 
@@ -24,7 +43,7 @@ export const updateCategoryApi = async (
 ) => {
   const res = await axios.put(
     `${import.meta.env.VITE_BASE_URL}/category/update/${id}`,
-    data,
+    { name: data },
     {
       headers: { token: `Bearer ${token}` },
     }

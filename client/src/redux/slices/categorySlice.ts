@@ -1,8 +1,9 @@
+import { TCategory } from "@/types/main-types";
 import { createSlice } from "@reduxjs/toolkit";
 
 type TState = {
   isLoading: boolean;
-  categories: string[];
+  categories: TCategory[];
 };
 
 const initialState: TState = {

@@ -96,4 +96,24 @@
   .hidden-scrollbar::-webkit-scrollbar {
     display: none;
   }
+  /* React pagination style */
+  ul[aria-label="Pagination"] {
+    @apply flex items-center justify-center gap-2 flex-wrap;
+    li {
+      @apply rounded-lg hover:border border border-transparent hover:bg-primary hover:text-white;
+    }
+    .selected {
+      @apply bg-primary text-white rounded-lg;
+    }
+    li a {
+      @apply border w-[40px] h-[40px] rounded-lg cursor-pointer flex items-center justify-center;
+    }
+    li.break {
+      @apply bg-transparent border;
+    }
+    li.previous,
+    li.next {
+      @apply bg-border text-lg select-none hover:opacity-80 hover:text-black;
+    }
+  }
 }
