@@ -20,6 +20,7 @@ import ProductThumbnail from "@/modules/product/ProductThumbnail";
 import ProductCarouselImages from "@/modules/product/ProductCarouselImages";
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from "@/utils/firebase";
+import CategoryCombobox from "../category/CategoryCombobox";
 
 const formSchema = z.object({
   name: z
@@ -48,6 +49,7 @@ initializeApp(firebaseConfig);
 const AddNewProduct = () => {
   const [thumbnail, setThumbnail] = useState<string>("");
   const [listImages, setListImages] = useState<string[]>([]);
+  const [category, setCategory] = useState<string>("");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -111,6 +113,15 @@ const AddNewProduct = () => {
                     </FormItem>
                   )}
                 />
+
+                <FormItem>
+                  <FormLabel>Category</FormLabel>
+                  <CategoryCombobox
+                    category={category}
+                    setCategory={setCategory}
+                  />
+                </FormItem>
+
                 <FormField
                   control={form.control}
                   name="price"

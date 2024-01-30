@@ -2,7 +2,6 @@ import TitleSection from "@/components/TitleSection";
 import Checkbox from "@/components/Checkbox";
 import CategoryTable from "@/modules/category/CategoryTable";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { TSortType } from "@/types/general-types";
 import { queryParams, sortTypes } from "@/constanst";
 import { ChevronLeft, ChevronRight, Search } from "lucide-react";
@@ -18,7 +17,6 @@ import {
 import { getCategories } from "@/services/categoryService";
 
 const ManageCategory = () => {
-  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { isLoading, categories } = useAppSelector((state) => state.category);
 

@@ -1,3 +1,4 @@
+import { queryParams } from "@/constanst";
 import {
   loadingCategories,
   storeCategories,
@@ -14,8 +15,8 @@ export default function useGetcategories() {
     async function fetchCategories() {
       try {
         dispatch(loadingCategories(true));
-        const data = await getCategories();
-        dispatch(storeCategories(data));
+        const data = await getCategories(queryParams.PAGE, 100);
+        dispatch(storeCategories(data?.docs));
       } catch (error) {
         console.log(error);
         dispatch(loadingCategories(false));
