@@ -5,17 +5,18 @@ import {
   ref,
   uploadBytesResumable,
 } from "firebase/storage";
+import { toast } from "sonner";
 /* <<=============================================================>> */
 
 export default function useUploadListImage() {
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [listImage, setListImage] = useState<string[]>([]);
 
-  // SELECT IMAGES
   const handleSelectImages = (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
     const fileArray = Array.from(files);
+
     fileArray.forEach((file) => handleUploadListImage(file));
   };
 
