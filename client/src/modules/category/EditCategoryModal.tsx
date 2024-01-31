@@ -53,7 +53,6 @@ export function EditCategoryModal({ item }: { item: TCategory }) {
       const data = await getCategories();
       dispatch(storeCategories(data?.docs));
       toast.success("Category updated");
-      form.reset();
       setOpen(false);
     } catch (error) {
       console.log(error);

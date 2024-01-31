@@ -98,8 +98,12 @@ const ProductCarouselImages = ({ listImages = [], setListImages }: Props) => {
         <Carousel className="w-full max-w-xs mx-auto">
           <CarouselContent>
             {listImages.map((item, index) => (
-              <CarouselItem key={index} className="relative">
-                <img src={item} alt="" className="aspect-square rounded-md" />
+              <CarouselItem key={index} className="relative border">
+                <img
+                  src={item}
+                  alt=""
+                  className="aspect-square rounded-md object-contain"
+                />
                 <span
                   onClick={() => handleDeleteImage(item)}
                   className="flex items-center justify-center w-[35px] h-[35px] bg-primary rounded-full absolute top-3 right-3 text-white cursor-pointer"

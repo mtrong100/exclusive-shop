@@ -13,29 +13,29 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus } from "lucide-react";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
 import BackButton from "@/components/BackButton";
-import { useParams } from "react-router-dom";
-import { useEffect } from "react";
+import { toast } from "sonner";
+import { useEffect, useState } from "react";
+import ProductThumbnail from "@/modules/product/ProductThumbnail";
+import ProductCarouselImages from "@/modules/product/ProductCarouselImages";
+import CategoryCombobox from "../category/CategoryCombobox";
+import ComboboxRoot from "@/components/ComboboxRoot";
+import { getAllProductsApi, updateProductApi } from "@/services/productService";
+import { TProductRequest } from "@/types/general-types";
+import { Loader2 } from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
+import useGetProductDetail from "@/modules/product/useGetProductDetail";
+import { useAppDispatch } from "@/redux/store";
+import { storeProducts } from "@/redux/slices/productSlice";
 
 const formSchema = z.object({
   name: z
     .string()
+    .toLowerCase()
     .min(10, { message: "Name must be at least 10 characters long" })
     .max(300, { message: "Name cannot exceed 300 characters" }),
   price: z.number().positive({ message: "Price must be a positive number" }),
-  discount: z.number().positive().optional(),
-  rating: z
-    .number()
-    .min(1, { message: "Rating must be at least 1" })
-    .max(5, { message: "Rating cannot exceed 5" }),
+  discount: z.number().int().min(0).optional(),
   description: z
     .string()
     .min(100, { message: "Description must be at least 100 characters long" })
@@ -43,11 +43,22 @@ const formSchema = z.object({
   stock: z
     .number()
     .int()
-    .min(0, { message: "Stock must be a non-negative integer" }),
+    .min(0, { message: "Stock must be a non-negative integer" })
+    .positive({ message: "Stock must be a positive number" }),
 });
 
 const EditProduct = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { data: productDetail } = useGetProductDetail(id as string);
+
+  const [isUpdating, setIsUpdating] = useState<boolean>(false);
+  const [thumbnail, setThumbnail] = useState<string>("");
+  const [listImages, setListImages] = useState<string[]>([]);
+  const [category, setCategory] = useState<string>("");
+  const [rating, setRating] = useState<string>("");
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -55,24 +66,82 @@ const EditProduct = () => {
       description: "",
       price: 0,
       discount: 5,
-      rating: 1,
       stock: 10,
     },
   });
 
-  // FULL FILL DATA
-  useEffect(() => {}, []);
+  useEffect(() => {
+    form.reset({
+      name: productDetail?.name,
+      description: productDetail?.description,
+      price: productDetail?.price,
+      discount: productDetail?.discount,
+      stock: productDetail?.stock,
+    });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+    setListImages(productDetail?.images as string[]);
+    setRating(productDetail?.rating as string);
+    setCategory(productDetail?.category as string);
+    setThumbnail(productDetail?.thumbnail as string);
+  }, [
+    form,
+    productDetail?.category,
+    productDetail?.description,
+    productDetail?.discount,
+    productDetail?.images,
+    productDetail?.name,
+    productDetail?.price,
+    productDetail?.rating,
+    productDetail?.stock,
+    productDetail?.thumbnail,
+  ]);
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      setIsUpdating(true);
+
+      if (!thumbnail) {
+        toast.info("Please upload your product thumbnail");
+        return;
+      }
+
+      if (!category) {
+        toast.info("Please choose your product category");
+        return;
+      }
+
+      if (!rating) {
+        toast.info("Please rate your product");
+        return;
+      }
+
+      const request: TProductRequest = {
+        ...values,
+        thumbnail,
+        category,
+        rating,
+        images: listImages,
+      };
+
+      const token = JSON.parse(localStorage.getItem("EXCLUSIVE_TOKEN") || "");
+      await updateProductApi(id as string, token, request);
+      const data = await getAllProductsApi();
+      dispatch(storeProducts(data?.docs));
+      toast.success("Product updated");
+      setIsUpdating(false);
+
+      navigate("/manage-product");
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to update product");
+      setIsUpdating(false);
+    }
   }
 
   return (
     <section className="relative">
       <BackButton path="/manage-product" />
-      <TitleSection>Edit your product</TitleSection>
+      <TitleSection>Create a new product</TitleSection>
       <div className="mt-5 w-full max-w-[950px] mx-auto">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -92,6 +161,7 @@ const EditProduct = () => {
                     </FormItem>
                   )}
                 />
+
                 <FormField
                   control={form.control}
                   name="description"
@@ -109,6 +179,15 @@ const EditProduct = () => {
                     </FormItem>
                   )}
                 />
+
+                <FormItem>
+                  <FormLabel>Category</FormLabel>
+                  <CategoryCombobox
+                    category={category}
+                    setCategory={setCategory}
+                  />
+                </FormItem>
+
                 <FormField
                   control={form.control}
                   name="price"
@@ -116,12 +195,20 @@ const EditProduct = () => {
                     <FormItem>
                       <FormLabel>Price</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input
+                          type="number"
+                          {...field}
+                          onChange={(e) => {
+                            const value = parseFloat(e.target.value);
+                            field.onChange(value);
+                          }}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+
                 <FormField
                   control={form.control}
                   name="discount"
@@ -129,25 +216,32 @@ const EditProduct = () => {
                     <FormItem>
                       <FormLabel>Discount</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input
+                          {...field}
+                          min={0}
+                          type="number"
+                          onChange={(e) => {
+                            const value = parseInt(e.target.value);
+                            field.onChange(value);
+                          }}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="rating"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Rating</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+
+                <FormItem>
+                  <FormLabel>Rating</FormLabel>
+                  <ComboboxRoot
+                    data={["1", "2", "3", "4", "5"]}
+                    placeHolder="Choose rating..."
+                    value={rating}
+                    setValue={setRating}
+                    className="w-[600px]"
+                  />
+                </FormItem>
+
                 <FormField
                   control={form.control}
                   name="stock"
@@ -155,7 +249,15 @@ const EditProduct = () => {
                     <FormItem>
                       <FormLabel>Stock</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input
+                          {...field}
+                          min={0}
+                          type="number"
+                          onChange={(e) => {
+                            const value = parseInt(e.target.value);
+                            field.onChange(value);
+                          }}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -165,61 +267,27 @@ const EditProduct = () => {
 
               {/* IMAGES */}
               <div className="grid grid-cols-1 gap-[30px]">
-                {/* THUMBNAIL */}
-                <FormItem>
-                  <FormLabel>Product thumbnail</FormLabel>
-                  <div className="aspect-square border border-dashed border-gray-400 rounded-md flex flex-col items-center justify-center">
-                    <label htmlFor="upload-thumbnail">
-                      <Plus size={80} className="cursor-pointer opacity-50" />
-                    </label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      name="upload-thumbnail"
-                      id="upload-thumbnail"
-                      className="hidden"
-                    />
-                  </div>
-                </FormItem>
-
-                {/* CAROUSEL IMAGES */}
-                <FormItem>
-                  <FormLabel>Product images</FormLabel>
-                  <Carousel className="w-full max-w-xs mx-auto">
-                    <CarouselContent>
-                      {Array.from({ length: 5 }).map((_, index) => (
-                        <CarouselItem key={index}>
-                          <div className="aspect-square border border-dashed border-gray-400 rounded-md flex items-center justify-center">
-                            <label htmlFor="upload-images">
-                              <Plus
-                                size={80}
-                                className="cursor-pointer opacity-50"
-                              />
-                            </label>
-                            <input
-                              type="file"
-                              accept="image/*"
-                              name="upload-images"
-                              id="upload-images"
-                              className="hidden"
-                              multiple
-                            />
-                          </div>
-                        </CarouselItem>
-                      ))}
-                    </CarouselContent>
-                    <CarouselPrevious />
-                    <CarouselNext />
-                  </Carousel>
-                </FormItem>
+                <ProductThumbnail
+                  thumbnail={thumbnail}
+                  setThumbnail={setThumbnail}
+                />
+                <ProductCarouselImages
+                  listImages={listImages}
+                  setListImages={setListImages}
+                />
               </div>
             </section>
 
             <Button
+              disabled={isUpdating}
               type="submit"
               className="h-[50px] px-20 text-lg flex mx-auto"
             >
-              Submit
+              {isUpdating ? (
+                <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+              ) : (
+                "Update"
+              )}
             </Button>
           </form>
         </Form>

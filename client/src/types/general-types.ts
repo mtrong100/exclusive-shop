@@ -46,3 +46,15 @@ export type TUpdateUserRequest = {
   address: string;
   phone: string;
 };
+
+export type TProductRequest = {
+  name: string;
+  thumbnail: string;
+  images: string[];
+  category: string;
+  rating: string;
+  price: number;
+  description: string;
+  stock: number;
+  discount?: number;
+};

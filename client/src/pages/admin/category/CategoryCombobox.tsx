@@ -17,17 +17,20 @@ import { Button } from "@/components/ui/button";
 import { TCategory } from "@/types/main-types";
 import { getCategories } from "@/services/categoryService";
 import ReactPaginate from "react-paginate";
+import { twMerge } from "tailwind-merge";
 
 interface Props {
   category: string;
+  className?: string;
   setCategory: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const CategoryCombobox = ({ category, setCategory }: Props) => {
+const CategoryCombobox = ({ category, setCategory, className = "" }: Props) => {
   const [categories, setCategories] = useState<TCategory[]>([]);
   const [open, setOpen] = useState(false);
   const [nextPage, setNextPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
+  const [currentPage, setCurrentPage] = useState<number>(0);
 
   useEffect(() => {
     async function fetchData() {
@@ -45,6 +48,7 @@ const CategoryCombobox = ({ category, setCategory }: Props) => {
 
   // CLICK PAGE
   const handlePageClick = (event: { selected: number }) => {
+    setCurrentPage(event.selected);
     setNextPage(event.selected + 1);
   };
 
@@ -63,7 +67,9 @@ const CategoryCombobox = ({ category, setCategory }: Props) => {
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className={`p-0 w-[600px] overflow-y-auto`}>
+      <PopoverContent
+        className={`${twMerge("p-0 w-[600px] overflow-y-auto", className)} `}
+      >
         <Command>
           <CommandInput placeholder="Find category..." />
           <CommandEmpty>Not found.</CommandEmpty>
@@ -100,6 +106,7 @@ const CategoryCombobox = ({ category, setCategory }: Props) => {
             pageCount={totalPages}
             previousLabel={<ChevronLeft />}
             renderOnZeroPageCount={null}
+            forcePage={currentPage}
           />
         </div>
       </PopoverContent>

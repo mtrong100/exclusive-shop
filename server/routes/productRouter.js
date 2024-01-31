@@ -16,6 +16,6 @@ router.post("/create", verifyAdmin, createProduct);
 router.put("/update/:id", verifyAdmin, updateProduct);
 router.delete("/delete/:id", verifyAdmin, deleteProduct);
 router.get("/:id", getProductDetail);
-router.get("category/:category", getProductsByCategory);
+router.get("/category/:category", getProductsByCategory);
 
 export default router;

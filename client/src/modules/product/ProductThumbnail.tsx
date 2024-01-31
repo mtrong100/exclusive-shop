@@ -51,11 +51,11 @@ const ProductThumbnail = ({ thumbnail, setThumbnail }: Props) => {
     <FormItem>
       <FormLabel>Product thumbnail</FormLabel>
       {!isUploading && thumbnail && (
-        <div className="relative">
+        <div className="relative border">
           <img
             src={thumbnail}
             alt="product-thumbnail"
-            className="aspect-square rounded-lg object-cover"
+            className="aspect-square rounded-lg object-contain"
           />
 
           <span

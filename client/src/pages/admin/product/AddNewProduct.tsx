@@ -18,9 +18,11 @@ import { toast } from "sonner";
 import { useState } from "react";
 import ProductThumbnail from "@/modules/product/ProductThumbnail";
 import ProductCarouselImages from "@/modules/product/ProductCarouselImages";
-import { initializeApp } from "firebase/app";
-import { firebaseConfig } from "@/utils/firebase";
 import CategoryCombobox from "../category/CategoryCombobox";
+import ComboboxRoot from "@/components/ComboboxRoot";
+import { createProductApi } from "@/services/productService";
+import { TProductRequest } from "@/types/general-types";
+import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
   name: z
@@ -29,11 +31,7 @@ const formSchema = z.object({
     .min(10, { message: "Name must be at least 10 characters long" })
     .max(300, { message: "Name cannot exceed 300 characters" }),
   price: z.number().positive({ message: "Price must be a positive number" }),
-  discount: z.number().positive().optional(),
-  rating: z
-    .number()
-    .min(1, { message: "Rating must be at least 1" })
-    .max(5, { message: "Rating cannot exceed 5" }),
+  discount: z.number().positive().int().min(0).optional(),
   description: z
     .string()
     .min(100, { message: "Description must be at least 100 characters long" })
@@ -41,15 +39,16 @@ const formSchema = z.object({
   stock: z
     .number()
     .int()
-    .min(0, { message: "Stock must be a non-negative integer" }),
+    .min(0, { message: "Stock must be a non-negative integer" })
+    .positive({ message: "Stock must be a positive number" }),
 });
 
-initializeApp(firebaseConfig);
-
 const AddNewProduct = () => {
+  const [isAdding, setIsAdding] = useState<boolean>(false);
   const [thumbnail, setThumbnail] = useState<string>("");
   const [listImages, setListImages] = useState<string[]>([]);
   const [category, setCategory] = useState<string>("");
+  const [rating, setRating] = useState<string>("");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -58,18 +57,51 @@ const AddNewProduct = () => {
       description: "",
       price: 0,
       discount: 5,
-      rating: 1,
       stock: 10,
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      //....
-      console.log(values);
+      setIsAdding(true);
+
+      if (!thumbnail) {
+        toast.info("Please upload your product thumbnail");
+        return;
+      }
+
+      if (!category) {
+        toast.info("Please choose your product category");
+        return;
+      }
+
+      if (!rating) {
+        toast.info("Please rate your product");
+        return;
+      }
+
+      const request: TProductRequest = {
+        ...values,
+        thumbnail,
+        category,
+        rating,
+        images: listImages,
+      };
+
+      const token = JSON.parse(localStorage.getItem("EXCLUSIVE_TOKEN") || "");
+      await createProductApi(token, request);
+      toast.success("New product added");
+      setIsAdding(false);
+
+      form.reset();
+      setThumbnail("");
+      setListImages([]);
+      setCategory("");
+      setRating("");
     } catch (error) {
       console.log(error);
       toast.error("Failed to add new product");
+      setIsAdding(false);
     }
   }
 
@@ -96,6 +128,7 @@ const AddNewProduct = () => {
                     </FormItem>
                   )}
                 />
+
                 <FormField
                   control={form.control}
                   name="description"
@@ -129,12 +162,20 @@ const AddNewProduct = () => {
                     <FormItem>
                       <FormLabel>Price</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input
+                          type="number"
+                          {...field}
+                          onChange={(e) => {
+                            const value = parseFloat(e.target.value);
+                            field.onChange(value);
+                          }}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+
                 <FormField
                   control={form.control}
                   name="discount"
@@ -142,25 +183,32 @@ const AddNewProduct = () => {
                     <FormItem>
                       <FormLabel>Discount</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input
+                          {...field}
+                          min={0}
+                          type="number"
+                          onChange={(e) => {
+                            const value = parseInt(e.target.value);
+                            field.onChange(value);
+                          }}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="rating"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Rating</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+
+                <FormItem>
+                  <FormLabel>Rating</FormLabel>
+                  <ComboboxRoot
+                    data={["1", "2", "3", "4", "5"]}
+                    placeHolder="Choose rating..."
+                    value={rating}
+                    setValue={setRating}
+                    className="w-[600px]"
+                  />
+                </FormItem>
+
                 <FormField
                   control={form.control}
                   name="stock"
@@ -168,7 +216,15 @@ const AddNewProduct = () => {
                     <FormItem>
                       <FormLabel>Stock</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input
+                          {...field}
+                          min={0}
+                          type="number"
+                          onChange={(e) => {
+                            const value = parseInt(e.target.value);
+                            field.onChange(value);
+                          }}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -190,10 +246,15 @@ const AddNewProduct = () => {
             </section>
 
             <Button
+              disabled={isAdding}
               type="submit"
               className="h-[50px] px-20 text-lg flex mx-auto"
             >
-              Submit
+              {isAdding ? (
+                <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+              ) : (
+                "Add New"
+              )}
             </Button>
           </form>
         </Form>
