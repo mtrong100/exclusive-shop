@@ -2,9 +2,25 @@ import TitleSection from "./TitleSection";
 import { ProductCarousel } from "./ProductCarousel";
 import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
+import { getAllProductsApi } from "@/services/productService";
+import { useEffect, useState } from "react";
+import { TProduct } from "@/types/main-types";
+import { queryParams } from "@/constanst";
 
 const BestSellingProducts = () => {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [productList, setProductList] = useState<TProduct[]>([]);
+
+  useEffect(() => {
+    async function fetchData() {
+      setIsLoading(true);
+      const data = await getAllProductsApi(queryParams.PAGE, 4, "asc");
+      setProductList(data?.docs);
+      setIsLoading(false);
+    }
+    fetchData();
+  }, []);
 
   return (
     <div className="mt-20">
@@ -18,7 +34,7 @@ const BestSellingProducts = () => {
         </Button>
       </div>
       <ul className="flex items-center gap-[30px] mt-[60px]">
-        <ProductCarousel />
+        <ProductCarousel data={productList} loading={isLoading} />
       </ul>
     </div>
   );

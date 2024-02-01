@@ -5,17 +5,33 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import ProductCard from "./ProductCard";
+import ProductCard, { ProductCardSkeleton } from "./ProductCard";
+import { TProduct } from "@/types/main-types";
 
-export function ProductCarousel() {
+interface Props {
+  data: TProduct[];
+  loading: boolean;
+}
+
+export function ProductCarousel({ data = [], loading = false }: Props) {
   return (
     <Carousel className="w-full">
       <CarouselContent>
-        {Array.from({ length: 8 }).map((_, index) => (
-          <CarouselItem key={index} className="basis-1/4">
-            <ProductCard />
-          </CarouselItem>
-        ))}
+        {loading &&
+          Array(4)
+            .fill(0)
+            .map((index) => (
+              <CarouselItem key={index} className="basis-1/4">
+                <ProductCardSkeleton />
+              </CarouselItem>
+            ))}
+
+        {!loading &&
+          data?.map((item) => (
+            <CarouselItem key={item?._id} className="basis-1/4">
+              <ProductCard item={item} />
+            </CarouselItem>
+          ))}
       </CarouselContent>
       <CarouselPrevious />
       <CarouselNext />

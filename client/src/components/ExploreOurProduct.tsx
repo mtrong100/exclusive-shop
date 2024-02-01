@@ -1,22 +1,36 @@
 import TitleSection from "./TitleSection";
 import { Button } from "./ui/button";
-import ProductCard from "./ProductCard";
 import { useNavigate } from "react-router-dom";
-import { v4 as uuidv4 } from "uuid";
+import { useEffect, useState } from "react";
+import { TProduct } from "@/types/main-types";
+import { getAllProductsApi } from "@/services/productService";
+import { queryParams } from "@/constanst";
+import ProductList from "@/modules/product/ProductList";
 
 const ExploreOurProduct = () => {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [productList, setProductList] = useState<TProduct[]>([]);
+
+  useEffect(() => {
+    async function fetchData() {
+      setIsLoading(true);
+      const data = await getAllProductsApi(queryParams.PAGE, 8);
+      setProductList(data?.docs);
+      setIsLoading(false);
+    }
+    fetchData();
+  }, []);
 
   return (
     <div>
       <TitleSection>Explore Our Products</TitleSection>
-      <ul className="grid grid-cols-4 gap-x-[30px] gap-y-[60px] mt-[60px]">
-        {Array(8)
-          .fill(0)
-          .map(() => (
-            <ProductCard key={uuidv4()} />
-          ))}
-      </ul>
+      <ProductList
+        isLoading={isLoading}
+        products={productList}
+        loadingAmount={8}
+        className="grid-cols-4"
+      />
       <Button
         onClick={() => navigate("/shop")}
         className="h-[50px] rounded-md px-10 mt-[50px] flex items-center mx-auto"

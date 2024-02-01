@@ -106,8 +106,8 @@ const ManageProduct = () => {
               <input
                 type="text"
                 value={value}
-                placeholder="What are you looking for?"
                 onChange={handleChange}
+                placeholder="What are you looking for?"
                 className="w-full focus:outline-none max-w-full placeholder:text-sm bg-transparent"
               />
               <Search className="flex-shrink-0 ml-[15px]" />

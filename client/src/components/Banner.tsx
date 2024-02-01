@@ -1,21 +1,46 @@
-import { categories } from "@/constanst";
 import { ArrowRight } from "lucide-react";
 import { FaApple } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import iphoneBanner from "../assets/images/iphone-banner.png";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
+import {
+  loadingCategories,
+  storeCategories,
+} from "@/redux/slices/categorySlice";
+import { getCategories } from "@/services/categoryService";
+import { queryParams } from "@/constanst";
+import { useEffect } from "react";
 
 const Banner = () => {
+  const dispatch = useAppDispatch();
+  const { categories } = useAppSelector((state) => state.category);
+
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        dispatch(loadingCategories(true));
+        const data = await getCategories(queryParams.PAGE, 9);
+        dispatch(storeCategories(data?.docs));
+      } catch (error) {
+        console.log(error);
+        dispatch(loadingCategories(false));
+        dispatch(storeCategories([]));
+      }
+    }
+    fetchCategories();
+  }, [dispatch]);
+
   return (
     <section className="grid grid-cols-[220px_minmax(0,_1fr)] gap-5 ">
       {/* CATEGORY LIST */}
       <div className="border-r pt-5">
         <ul className="flex flex-col gap-4">
-          {categories.map((item: string) => (
+          {categories?.map((item) => (
             <li
-              className="hover:border-black cursor-pointer w-fit border-b-transparent border-b"
-              key={item}
+              className="hover:border-black capitalize cursor-pointer w-fit border-b-transparent border-b"
+              key={item?._id}
             >
-              {item}
+              {item?.name}
             </li>
           ))}
         </ul>
