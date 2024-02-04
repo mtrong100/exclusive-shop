@@ -3,8 +3,23 @@ import { TProduct } from "@/types/main-types";
 import { displayStar } from "@/utils/helper";
 import { Skeleton } from "@/components/ui/skeleton";
 import { twMerge } from "tailwind-merge";
+import { useCart } from "./cart-context";
 
 const ProductCard = ({ item }: { item: TProduct }) => {
+  const { addToCart } = useCart();
+
+  const handleAddToCart = (item: TProduct) => {
+    const data = {
+      product: item?._id,
+      name: item?.name,
+      image: item?.thumbnail,
+      quantity: 1,
+      price: item?.price,
+    };
+
+    addToCart(data);
+  };
+
   return (
     <article className="rounded-sm group ">
       {/* TOP */}
@@ -32,7 +47,10 @@ const ProductCard = ({ item }: { item: TProduct }) => {
           />
         </div>
 
-        <button className="group-hover:translate-y-0 translate-y-11  transition-all hover:bg-black/80 duration-300 text-white absolute bottom-0  bg-black w-full h-[41px] rounded-bl-lg rounded-br-lg">
+        <button
+          onClick={() => handleAddToCart(item)}
+          className="group-hover:translate-y-0 translate-y-11  transition-all hover:bg-black/80 duration-300 text-white absolute bottom-0  bg-black w-full h-[41px] rounded-bl-lg rounded-br-lg"
+        >
           Add To Cart
         </button>
       </div>

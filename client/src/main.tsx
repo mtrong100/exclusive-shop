@@ -6,12 +6,15 @@ import { Provider } from "react-redux";
 import { store } from "./redux/store.ts";
 import { Toaster } from "./components/ui/sonner.tsx";
 import { AuthProvider } from "./components/auth-context.tsx";
+import { CartProvider } from "./components/cart-context.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <BrowserRouter>
     <Provider store={store}>
       <AuthProvider>
-        <App />
+        <CartProvider>
+          <App />
+        </CartProvider>
       </AuthProvider>
       <Toaster />
     </Provider>
