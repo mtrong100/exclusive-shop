@@ -4,6 +4,7 @@ import { displayStar } from "@/utils/helper";
 import { Skeleton } from "@/components/ui/skeleton";
 import { twMerge } from "tailwind-merge";
 import { useCart } from "./cart-context";
+import { Link } from "react-router-dom";
 
 const ProductCard = ({ item }: { item: TProduct }) => {
   const { addToCart } = useCart();
@@ -39,13 +40,13 @@ const ProductCard = ({ item }: { item: TProduct }) => {
           </span>
         </div>
 
-        <div>
+        <Link to={`/product/${item?._id}`}>
           <img
             src={item?.thumbnail}
             alt={item?.name}
             className="object-contain"
           />
-        </div>
+        </Link>
 
         <button
           onClick={() => handleAddToCart(item)}
@@ -57,7 +58,12 @@ const ProductCard = ({ item }: { item: TProduct }) => {
 
       {/* BOTTOM */}
       <div className="mt-2">
-        <h1 className="font-semibold line-clamp-2 capitalize">{item?.name}</h1>
+        <Link
+          to={`/product/${item?._id}`}
+          className="font-semibold line-clamp-2 capitalize hover:underline"
+        >
+          {item?.name}
+        </Link>
         <div className="flex items-center gap-3 mt-1 font-medium">
           <p className="text-primary font-bold text-2xl">{item?.price + "$"}</p>
         </div>

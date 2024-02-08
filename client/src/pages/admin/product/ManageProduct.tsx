@@ -5,7 +5,13 @@ import { queryParams, sortTypes } from "@/constanst";
 import ProductTable from "@/modules/product/ProductTable";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { TSortType } from "@/types/general-types";
-import { ChevronLeft, ChevronRight, Plus, Search } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ListFilter,
+  Plus,
+  Search,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CategoryCombobox from "../category/CategoryCombobox";
@@ -17,6 +23,11 @@ import {
   getProductByCategoryApi,
 } from "@/services/productService";
 import ReactPaginate from "react-paginate";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@radix-ui/react-popover";
 
 const ManageProduct = () => {
   const navigate = useNavigate();
@@ -88,7 +99,7 @@ const ManageProduct = () => {
         </Button>
       </div>
 
-      <div className="mt-8 grid grid-cols-[minmax(0,_1fr)_250px] items-start gap-[30px]">
+      <div className="mt-8  grid-cols-[minmax(0,_1fr)_250px] items-start gap-[30px]">
         <div>
           <div className="flex items-center gap-5 ">
             {/* SORT CATEGORY */}
@@ -112,6 +123,35 @@ const ManageProduct = () => {
               />
               <Search className="flex-shrink-0 ml-[15px]" />
             </div>
+
+            <Popover>
+              <PopoverTrigger asChild>
+                <span className="flex items-center justify-center w-[70px] h-[50px] rounded-sm bg-slate-100">
+                  <ListFilter size={25} />
+                </span>
+              </PopoverTrigger>
+              <PopoverContent className="absolute -right-5 w-[190px] rounded-md p-1 bg-white shadow-md z-10">
+                <div className="p-3 rounded-md shadow-md border h-fit">
+                  <h1 className="text-xl font-bold">Sắp xếp</h1>
+                  <ul className="mt-4 flex flex-col gap-3">
+                    {sortTypes.map((item: TSortType) => (
+                      <li
+                        key={item.title}
+                        onClick={() => setOrder(item.value)}
+                        className="flex items-center gap-3"
+                      >
+                        {order === item.value ? (
+                          <Checkbox type="checked" />
+                        ) : (
+                          <Checkbox />
+                        )}
+                        <p className="cursor-default">{item.title}</p>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
 
           <ul>
@@ -139,7 +179,7 @@ const ManageProduct = () => {
           </div>
         </div>
 
-        <div className="p-3 rounded-md shadow-md border h-fit">
+        {/* <div className="p-3 rounded-md shadow-md border h-fit">
           <h1 className="text-xl font-bold">Sắp xếp</h1>
           <ul className="mt-4 flex flex-col gap-3">
             {sortTypes.map((item: TSortType) => (
@@ -157,7 +197,7 @@ const ManageProduct = () => {
               </li>
             ))}
           </ul>
-        </div>
+        </div> */}
       </div>
     </section>
   );

@@ -5,6 +5,7 @@ export type TUser = {
   email: string;
   token: string;
   isAdmin: boolean;
+  favorites: string[];
   createdAt: Date;
   updatedAt: Date;
 };
@@ -26,6 +27,7 @@ export type TProduct = {
   description: string;
   stock: number;
   discount?: number;
+  sold?: number;
   createdAt: Date;
   updatedAt: Date;
 };

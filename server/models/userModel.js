@@ -12,6 +12,7 @@ const userSchema = new mongoose.Schema(
     resetPasswordOtp: { type: String, default: null },
     resetPasswordExpires: { type: Date, default: null },
     isAdmin: { type: Boolean, default: false, required: true },
+    favorites: { type: Array },
   },
   {
     timestamps: true,

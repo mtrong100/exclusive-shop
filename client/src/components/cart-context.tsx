@@ -1,4 +1,5 @@
 import { COUPON_CODE } from "@/constanst";
+import { TProduct } from "@/types/main-types";
 import React, { createContext, useContext, useState } from "react";
 
 interface CartItem {
@@ -17,6 +18,7 @@ interface CartContextType {
   decreaseQuantity: (itemId: string) => void;
   calculateSubTotal: () => number;
   calculatePurchase: (couponCode?: string) => number;
+  clearCart: () => void;
 }
 
 // Create the context
@@ -100,7 +102,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     return total;
   };
 
-  // FINAL PURCHASE
+  // CALCULATE PURCHASE
   const calculatePurchase = (couponCode?: string) => {
     const subtotal = calculateSubTotal();
 
@@ -114,6 +116,12 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     return total;
   };
 
+  // CLEAR CART
+  const clearCart = () => {
+    setCart([]);
+    localStorage.removeItem("EXCLUSIVE_CART");
+  };
+
   const value: CartContextType = {
     cart,
     addToCart,
@@ -121,6 +129,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     decreaseQuantity,
     calculateSubTotal,
     calculatePurchase,
+    clearCart,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

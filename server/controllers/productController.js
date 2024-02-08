@@ -1,5 +1,7 @@
 import Product from "../models/productModel.js";
+import User from "../models/userModel.js";
 import { queryParams } from "../utils/constants.js";
+import { errorHandler } from "../utils/errorHandler.js";
 
 export const getAllProducts = async (req, res, next) => {
   const {
@@ -133,6 +135,35 @@ export const deleteProduct = async (req, res, next) => {
     }
 
     return res.status(200).json({ message: "Product has been deleted" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const favoriteProduct = async (req, res, next) => {
+  const { id } = req.params;
+  const userId = req.user.id;
+
+  try {
+    const currentUser = await User.findById(userId);
+
+    if (!currentUser) {
+      return next(errorHandler(404, "User not found!"));
+    }
+
+    // Toggle follow
+    if (currentUser.favorites.includes(id)) {
+      currentUser.favorites = currentUser.favorites.filter(
+        (item) => item !== id
+      );
+
+      await currentUser.save();
+      return res.json({ message: "Unfavorite product" });
+    } else {
+      currentUser.favorites.push(id);
+      await currentUser.save();
+      return res.json({ message: "Favorite product" });
+    }
   } catch (error) {
     next(error);
   }

@@ -43,7 +43,7 @@ const Checkout = () => {
   const [couponApplied, setCouponApplied] = useState<boolean>(false);
   const [totalPurchase, setTotalPurchase] = useState<number | null>(null);
   const [checkPayment, setCheckPayment] = useState<boolean>(false);
-  const { cart, calculateSubTotal, calculatePurchase } = useCart();
+  const { cart, calculateSubTotal, calculatePurchase, clearCart } = useCart();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -75,10 +75,9 @@ const Checkout = () => {
         user: currentUser?._id,
       };
 
-      const data = await createOrderApi(token, request);
-      console.log(data);
-
+      await createOrderApi(token, request);
       toast.success("Place order successfully");
+      clearCart();
       navigate("/");
     } catch (error) {
       console.log(error);

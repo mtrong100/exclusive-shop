@@ -44,19 +44,31 @@ const ProductTable = () => {
       <TableHeader>
         <TableRow>
           <TableHead className="w-[300px]">Name</TableHead>
-          <TableHead className="w-[250px]">Category</TableHead>
-          <TableHead className="w-[150px]">Price</TableHead>
+          <TableHead>Category</TableHead>
+          <TableHead>Price</TableHead>
+          <TableHead>Stock</TableHead>
           <TableHead>Rating</TableHead>
+          <TableHead>Sold</TableHead>
           <TableHead className="text-right">Action</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {products?.map((item) => (
           <TableRow key={item?._id}>
-            <TableCell className="capitalize">{item?.name}</TableCell>
-            <TableCell className="capitalize">{item?.category}</TableCell>
-            <TableCell>{displayPrice(item?.price)}</TableCell>
+            <TableCell className="capitalize font-semibold ">
+              <p className="line-clamp-2">{item?.name}</p>
+            </TableCell>
+            <TableCell className="capitalize font-semibold text-slate-600">
+              <p className="line-clamp-1">{item?.category}</p>
+            </TableCell>
+            <TableCell className="font-medium text-green-600">
+              {displayPrice(item?.price)}
+            </TableCell>
+            <TableCell className="text-primary font-medium">
+              {item?.stock}
+            </TableCell>
             <TableCell>{displayRating(item?.rating)}</TableCell>
+            <TableCell className="font-semibold">{item?.sold || 0}</TableCell>
             <TableCell>
               <div className="flex opacity-50 items-center gap-5 justify-end">
                 <Eye
