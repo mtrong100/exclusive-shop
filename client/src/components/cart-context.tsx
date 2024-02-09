@@ -1,5 +1,4 @@
 import { COUPON_CODE } from "@/constanst";
-import { TProduct } from "@/types/main-types";
 import React, { createContext, useContext, useState } from "react";
 
 interface CartItem {

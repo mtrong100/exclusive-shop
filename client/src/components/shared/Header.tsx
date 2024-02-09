@@ -14,9 +14,11 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useAuth } from "../auth-context";
+import { useCart } from "../cart-context";
 
 const Header = () => {
   const { currentUser, setCurrentUser } = useAuth();
+  const { cart } = useCart();
   const location = useLocation();
 
   const handleLogout = () => {
@@ -71,7 +73,7 @@ const Header = () => {
               <Heart size={25} />
 
               <span className="absolute -top-1 -right-1 w-[16px] h-[16px] flex items-center justify-center rounded-full bg-primary text-white text-xs">
-                6
+                {currentUser?.favorites?.length || 0}
               </span>
             </Link>
 
@@ -80,7 +82,7 @@ const Header = () => {
               <ShoppingCart size={25} />
 
               <span className="absolute -top-1 -right-1 w-[16px] h-[16px] flex items-center justify-center rounded-full bg-primary text-white text-xs">
-                4
+                {cart?.length || 0}
               </span>
             </Link>
           </div>

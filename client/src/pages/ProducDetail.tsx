@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
-import { Heart, Minus, Plus } from "lucide-react";
+import { Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TitleSection from "@/components/TitleSection";
 import useGetProductDetail from "@/modules/product/useGetProductDetail";
@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { favoriteProductApi } from "@/services/productService";
 import { useAuth } from "@/components/auth-context";
 import { getUserDetailApi } from "@/services/userService";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 
 const ProducDetail = () => {
   const { id } = useParams();
@@ -35,11 +36,10 @@ const ProducDetail = () => {
   const handleFavoriteProduct = async () => {
     try {
       const token = JSON.parse(localStorage.getItem("EXCLUSIVE_TOKEN") || "");
-      const res = await favoriteProductApi(id as string, token);
+      await favoriteProductApi(id as string, token);
       const user = await getUserDetailApi(currentUser?._id as string, token);
       setCurrentUser(user);
       localStorage.setItem("EXCLUSIVE_USER", JSON.stringify(user));
-      console.log(res);
     } catch (error) {
       console.log(error);
       toast.error("Failed to favorite product");
@@ -122,16 +122,16 @@ const ProducDetail = () => {
             {isFavorited ? (
               <div
                 onClick={handleFavoriteProduct}
-                className={`flex items-center justify-center rounded-lg border w-[40px] h-[40px] cursor-pointer bg-primary `}
+                className={`flex items-center justify-center rounded-lg border w-[40px] h-[40px] cursor-pointer bg-primary text-white `}
               >
-                <Heart color="#fff" />
+                <FaHeart size={20} />
               </div>
             ) : (
               <div
                 onClick={handleFavoriteProduct}
                 className={`flex items-center justify-center rounded-lg border border-black w-[40px] h-[40px] cursor-pointer hover:bg-primary/10`}
               >
-                <Heart />
+                <FaRegHeart size={20} />
               </div>
             )}
           </div>

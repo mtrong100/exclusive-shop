@@ -12,7 +12,7 @@ import { useAuth } from "@/components/auth-context";
 
 const Home = () => {
   const { currentUser } = useAuth();
-  console.log("🚀 ~ Home ~ currentUser:", currentUser);
+  // console.log("🚀 ~ Home ~ currentUser:", currentUser);
 
   // FIX SCROLL BUG
   useEffect(() => {
