@@ -45,7 +45,7 @@ const ProductCard = ({ item }: { item: TProduct }) => {
   return (
     <article className="rounded-sm group ">
       {/* TOP */}
-      <div className="h-[250px] bg-[#F5F5F5] overflow-hidden rounded-lg relative flex flex-col items-center justify-center">
+      <div className="h-[250px] border overflow-hidden rounded-lg relative flex flex-col items-center justify-center">
         {item?.discount !== 0 && (
           <span className="py-[4px] px-3 text-sm text-white rounded-lg bg-primary absolute top-3 left-3">
             {`-${item?.discount}%`}

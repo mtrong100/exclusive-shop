@@ -12,6 +12,8 @@ import { favoriteProductApi } from "@/services/productService";
 import { useAuth } from "@/components/auth-context";
 import { getUserDetailApi } from "@/services/userService";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
+import useGetRelatedProducts from "@/modules/product/useGetRelatedProducts";
+import { ProductCarousel } from "@/components/ProductCarousel";
 
 const ProducDetail = () => {
   const { id } = useParams();
@@ -20,6 +22,9 @@ const ProducDetail = () => {
   const { data } = useGetProductDetail(id as string);
   const [quantity, setQuantity] = useState<number>(1);
   const [selectedImage, setSelectedImage] = useState<string>("");
+  const { relatedProducts, isLoading } = useGetRelatedProducts(
+    data?.category as string
+  );
 
   const handleAddToCart = () => {
     const product = {
@@ -142,7 +147,7 @@ const ProducDetail = () => {
       <div className="mt-[150px]">
         <TitleSection>Related Item</TitleSection>
         <ul className="flex items-center gap-[30px] mt-[60px]">
-          {/* <ProductCarousel /> */}
+          <ProductCarousel data={relatedProducts} loading={isLoading} />
         </ul>
       </div>
     </section>

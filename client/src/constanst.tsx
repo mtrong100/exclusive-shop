@@ -21,8 +21,9 @@ import {
 } from "./types/general-types";
 
 export const queryParams = {
-  LIMIT: 10,
+  LIMIT: 20,
   PAGE: 1,
+  SORT: "name",
   ORDER: "desc",
 };
 

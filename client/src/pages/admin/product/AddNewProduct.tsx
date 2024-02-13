@@ -30,8 +30,11 @@ const formSchema = z.object({
     .toLowerCase()
     .min(10, { message: "Name must be at least 10 characters long" })
     .max(300, { message: "Name cannot exceed 300 characters" }),
-  price: z.number().positive({ message: "Price must be a positive number" }),
-  discount: z.number().positive().int().min(0).optional(),
+  price: z
+    .number()
+    .min(1)
+    .positive({ message: "Price must be a positive number" }),
+  discount: z.number().min(0),
   description: z
     .string()
     .min(100, { message: "Description must be at least 100 characters long" })

@@ -5,6 +5,7 @@ import axios from "axios";
 export const getAllProductsApi = async (
   page = queryParams.PAGE,
   limit = queryParams.LIMIT,
+  sort = queryParams.SORT,
   order = queryParams.ORDER,
   query = ""
 ) => {
@@ -18,7 +19,7 @@ export const getAllProductsApi = async (
     res = await axios.get(
       `${
         import.meta.env.VITE_BASE_URL
-      }/product/all?page=${page}&limit=${limit}&order=${order}`
+      }/product/all?page=${page}&limit=${limit}&sort=${sort}&order=${order}`
     );
   }
 

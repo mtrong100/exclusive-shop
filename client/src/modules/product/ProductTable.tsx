@@ -72,7 +72,7 @@ const ProductTable = () => {
             <TableCell>
               <div className="flex opacity-50 items-center gap-5 justify-end">
                 <Eye
-                  onClick={() => navigate(`/product/${8275}`)}
+                  onClick={() => navigate(`/product/${item?._id}`)}
                   size={22}
                   className="cursor-pointer hover:text-primary"
                 />

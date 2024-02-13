@@ -50,6 +50,7 @@ const Shop = () => {
           data = await getAllProductsApi(
             nextPage,
             queryParams.LIMIT,
+            queryParams.SORT,
             order,
             searchQuery
           );

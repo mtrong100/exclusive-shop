@@ -33,8 +33,8 @@ const ProductCarouselImages = ({ listImages = [], setListImages }: Props) => {
     if (!files || files.length === 0) return;
     const fileArray = Array.from(files);
 
-    if (fileArray.length > 5) {
-      toast.error("You can only upload 5 images");
+    if (fileArray.length > 4) {
+      toast.error("You can only upload 4 images");
       return;
     }
 

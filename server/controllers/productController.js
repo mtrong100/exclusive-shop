@@ -7,6 +7,7 @@ export const getAllProducts = async (req, res, next) => {
   const {
     page = queryParams.PAGE,
     limit = queryParams.LIMIT,
+    sort = queryParams.SORT,
     order = queryParams.ORDER,
     query,
   } = req.query;
@@ -22,7 +23,7 @@ export const getAllProducts = async (req, res, next) => {
       page,
       limit,
       sort: {
-        createdAt: order === "asc" ? 1 : -1,
+        [sort]: order === "asc" ? 1 : -1,
       },
     };
 
