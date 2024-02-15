@@ -23,7 +23,20 @@ const ProductCategorySimpleAreaChart = ({ data }: { data: TProduct[] }) => {
         <YAxis />
         <Tooltip />
         <Legend />
-        <Area type="monotone" dataKey="category" stackId="1" fill="#8884d8" />
+        <Area
+          type="monotone"
+          dataKey="price"
+          stackId="1"
+          fill="#8884d8"
+          name="Price"
+        />
+        <Area
+          type="monotone"
+          dataKey="stock"
+          stackId="1"
+          fill="#82ca9d"
+          name="Stock"
+        />
       </AreaChart>
     </ResponsiveContainer>
   );
