@@ -10,23 +10,36 @@ import { queryParams } from "@/constanst";
 const FlashSale = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [productList, setProductList] = useState<TProduct[]>([]);
+  const [products, setProducts] = useState<TProduct[]>([]);
 
   useEffect(() => {
-    async function fetchData() {
-      setIsLoading(true);
-      const data = await getAllProductsApi(queryParams.PAGE, 4);
-      setProductList(data?.docs);
-      setIsLoading(false);
-    }
-    fetchData();
+    fetchFlashSalesProducts();
   }, []);
+
+  // FETCH FLASH SALES PRODUCTS
+  async function fetchFlashSalesProducts() {
+    try {
+      setIsLoading(true);
+      const data = await getAllProductsApi(
+        queryParams.PAGE,
+        queryParams.LIMIT,
+        "price",
+        "asc"
+      );
+      setProducts(data?.docs);
+      setIsLoading(false);
+    } catch (error) {
+      console.log("Failed to fetch flash sales products ->", error);
+      setIsLoading(false);
+      setProducts([]);
+    }
+  }
 
   return (
     <div>
       <TitleSection>Flash Sales</TitleSection>
       <ul className="flex items-center gap-[30px] mt-[60px]">
-        <ProductCarousel data={productList} loading={isLoading} />
+        <ProductCarousel data={products} loading={isLoading} />
       </ul>
       <Button
         onClick={() => navigate("/shop")}

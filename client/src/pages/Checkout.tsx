@@ -20,7 +20,10 @@ import { useCart } from "@/components/cart-context";
 import { displayPrice } from "@/utils/helper";
 import Checkbox from "@/components/Checkbox";
 import { createOrderApi } from "@/services/orderService";
+import Swal from "sweetalert2";
+import { Loader2 } from "lucide-react";
 
+// ZOD VALIDATION
 const formSchema = z.object({
   fullName: z
     .string()
@@ -44,7 +47,9 @@ const Checkout = () => {
   const [totalPurchase, setTotalPurchase] = useState<number | null>(null);
   const [checkPayment, setCheckPayment] = useState<boolean>(false);
   const { cart, calculateSubTotal, calculatePurchase, clearCart } = useCart();
+  const [loadingPayment, setLoadingPayment] = useState<boolean>(false);
 
+  // REACT-HOOK-FORM
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -55,36 +60,58 @@ const Checkout = () => {
     },
   });
 
+  // PURCHASE BILL
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!checkPayment) {
       toast.info("Please check payment method");
       return;
     }
 
-    try {
-      const token = JSON.parse(localStorage.getItem("EXCLUSIVE_TOKEN") || "");
-      const total = calculatePurchase();
+    Swal.fire({
+      title: "Ready to purchase?",
+      text: "Let's gooo, Give me that!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Purchase",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          setLoadingPayment(true);
+          const token = JSON.parse(
+            localStorage.getItem("EXCLUSIVE_TOKEN") || ""
+          );
+          const total = calculatePurchase();
 
-      const request = {
-        shippingAddress: {
-          ...values,
-        },
-        orderItems: cart,
-        paymentMethod: "Cash on delivery",
-        total,
-        user: currentUser?._id,
-      };
+          const request = {
+            shippingAddress: {
+              ...values,
+            },
+            orderItems: cart,
+            paymentMethod: "Cash on delivery",
+            total,
+            user: currentUser?._id,
+          };
 
-      await createOrderApi(token, request);
-      toast.success("Place order successfully");
-      clearCart();
-      navigate("/");
-    } catch (error) {
-      console.log(error);
-      toast.error("Failed to place an order");
-    }
+          await createOrderApi(token, request);
+          setLoadingPayment(false);
+          Swal.fire(
+            "Place order successfully!",
+            "Check your email to see order detail",
+            "success"
+          );
+          clearCart();
+        } catch (error) {
+          console.log("Failed to fetch API ->", error);
+          toast.error("Failed to place an order");
+          setLoadingPayment(false);
+        }
+      }
+    });
   }
 
+  // APPLY COUPON CODE
   const handleApplyCouponCode = () => {
     if (!couponCode) {
       toast.info("Please fill in coupon code");
@@ -111,8 +138,8 @@ const Checkout = () => {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="grid grid-cols-2 items-start gap-[100px]">
-            {/* FORM */}
-            <div>
+            {/* FIELDS */}
+            <section>
               <h1 className="mb-5 font-semibold text-3xl">Billing Details</h1>
               <ul className="flex flex-col gap-4">
                 <FormField
@@ -187,10 +214,11 @@ const Checkout = () => {
                   )}
                 />
               </ul>
-            </div>
+            </section>
 
-            <div>
-              {/* PRODUCTS */}
+            {/* BILLING DETAILS */}
+            <section>
+              {/* PRODUCTS IN CART */}
               <ul className="flex flex-col gap-3">
                 {cart?.map((item) => (
                   <li
@@ -213,7 +241,7 @@ const Checkout = () => {
                 ))}
               </ul>
 
-              {/* BILL */}
+              {/* BILL PAYMENT */}
               <ul className="mt-[24px] flex flex-col gap-4">
                 <li className="flex items-center justify-between border-b border-black pb-2">
                   <p>Subtotal:</p>
@@ -233,7 +261,7 @@ const Checkout = () => {
                 </li>
               </ul>
 
-              {/* CHECK PAYMENT */}
+              {/* PAYMENT METHOD */}
               <div
                 className="flex mt-2 items-center gap-2 cursor-default select-none"
                 onClick={() => setCheckPayment(!checkPayment)}
@@ -242,7 +270,7 @@ const Checkout = () => {
                 Cash on delivery
               </div>
 
-              {/* Coupon Code */}
+              {/* APPLY COUPON CODE */}
               <div className="flex items-center gap-4 mt-5">
                 <Input
                   type="text"
@@ -262,11 +290,18 @@ const Checkout = () => {
                 </Button>
               </div>
 
-              {/* Submit */}
-              <Button type="submit" className="h-[50px] w-full mt-[32px]">
-                Place Order
+              {/* SUBMIT BUYING PRODUCTS */}
+              <Button
+                disabled={loadingPayment}
+                type="submit"
+                className="h-[50px] w-full mt-[32px]"
+              >
+                {loadingPayment && (
+                  <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+                )}
+                Place an order
               </Button>
-            </div>
+            </section>
           </div>
         </form>
       </Form>
