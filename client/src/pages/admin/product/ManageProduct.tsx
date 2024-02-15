@@ -1,10 +1,10 @@
 import Checkbox from "@/components/Checkbox";
 import TitleSection from "@/components/TitleSection";
 import { Button } from "@/components/ui/button";
-import { queryParams, sortTypes } from "@/constanst";
+import { queryParams, sortOrder } from "@/constanst";
 import ProductTable from "@/modules/product/ProductTable";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { TSortType } from "@/types/general-types";
+import { TSortOrder } from "@/types/general-types";
 import {
   ChevronLeft,
   ChevronRight,
@@ -29,13 +29,41 @@ import {
   PopoverTrigger,
 } from "@radix-ui/react-popover";
 
+const sortProductType: TSortOrder[] = [
+  {
+    title: "Name",
+    value: "name",
+  },
+  {
+    title: "Price",
+    value: "price",
+  },
+  {
+    title: "Category",
+    value: "category",
+  },
+  {
+    title: "Sold",
+    value: "sold",
+  },
+  {
+    title: "Rating",
+    value: "rating",
+  },
+  {
+    title: "Stock",
+    value: "stock",
+  },
+];
+
 const ManageProduct = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { isLoading, products } = useAppSelector((state) => state.product);
 
   const [category, setCategory] = useState<string>("");
-  const [order, setOrder] = useState("desc");
+  const [order, setOrder] = useState<string>("desc");
+  const [sort, setSort] = useState<string>("name");
   const [nextPage, setNextPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [currentPage, setCurrentPage] = useState<number>(0);
@@ -54,6 +82,7 @@ const ManageProduct = () => {
           data = await getProductByCategoryApi(
             nextPage,
             queryParams.LIMIT,
+            sort,
             order,
             searchQuery,
             category
@@ -62,6 +91,7 @@ const ManageProduct = () => {
           data = await getAllProductsApi(
             nextPage,
             queryParams.LIMIT,
+            sort,
             order,
             searchQuery
           );
@@ -77,7 +107,7 @@ const ManageProduct = () => {
       }
     }
     fetchData();
-  }, [category, dispatch, nextPage, order, searchQuery]);
+  }, [category, dispatch, nextPage, order, searchQuery, sort]);
 
   // CLICK PAGE
   const handlePageClick = (event: { selected: number }) => {
@@ -126,29 +156,51 @@ const ManageProduct = () => {
 
             <Popover>
               <PopoverTrigger asChild>
-                <span className="flex items-center justify-center w-[70px] h-[50px] rounded-sm bg-slate-100">
+                <span className="flex items-center justify-center w-[75px] h-[50px] rounded-sm bg-muted hover:bg-gray-200">
                   <ListFilter size={25} />
                 </span>
               </PopoverTrigger>
-              <PopoverContent className="absolute -right-5 w-[190px] rounded-md p-1 bg-white shadow-md z-10">
-                <div className="p-3 rounded-md shadow-md border h-fit">
-                  <h1 className="text-xl font-bold">Sắp xếp</h1>
-                  <ul className="mt-4 flex flex-col gap-3">
-                    {sortTypes.map((item: TSortType) => (
-                      <li
-                        key={item.title}
-                        onClick={() => setOrder(item.value)}
-                        className="flex items-center gap-3"
-                      >
-                        {order === item.value ? (
-                          <Checkbox type="checked" />
-                        ) : (
-                          <Checkbox />
-                        )}
-                        <p className="cursor-default">{item.title}</p>
-                      </li>
-                    ))}
-                  </ul>
+              <PopoverContent className="absolute -right-5 w-[190px] rounded-md p-1 z-10 bg-white shadow-md border">
+                <div className="p-3 flex flex-col gap-3">
+                  <section>
+                    <h1 className="text-xl font-bold">Filter</h1>
+                    <ul className="mt-2 flex flex-col gap-3">
+                      {sortProductType.map((item: TSortOrder) => (
+                        <li
+                          key={item.title}
+                          onClick={() => setSort(item.value)}
+                          className="flex items-center gap-3"
+                        >
+                          {sort === item.value ? (
+                            <Checkbox type="checked" />
+                          ) : (
+                            <Checkbox />
+                          )}
+                          <p className="cursor-default">{item.title}</p>
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+
+                  <section>
+                    <h1 className="text-xl font-bold">Order</h1>
+                    <ul className="mt-2 flex flex-col gap-3">
+                      {sortOrder.map((item: TSortOrder) => (
+                        <li
+                          key={item.title}
+                          onClick={() => setOrder(item.value)}
+                          className="flex items-center gap-3"
+                        >
+                          {order === item.value ? (
+                            <Checkbox type="checked" />
+                          ) : (
+                            <Checkbox />
+                          )}
+                          <p className="cursor-default">{item.title}</p>
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
                 </div>
               </PopoverContent>
             </Popover>
@@ -178,26 +230,6 @@ const ManageProduct = () => {
             />
           </div>
         </div>
-
-        {/* <div className="p-3 rounded-md shadow-md border h-fit">
-          <h1 className="text-xl font-bold">Sắp xếp</h1>
-          <ul className="mt-4 flex flex-col gap-3">
-            {sortTypes.map((item: TSortType) => (
-              <li
-                key={item.title}
-                onClick={() => setOrder(item.value)}
-                className="flex items-center gap-3"
-              >
-                {order === item.value ? (
-                  <Checkbox type="checked" />
-                ) : (
-                  <Checkbox />
-                )}
-                <p className="cursor-default">{item.title}</p>
-              </li>
-            ))}
-          </ul>
-        </div> */}
       </div>
     </section>
   );

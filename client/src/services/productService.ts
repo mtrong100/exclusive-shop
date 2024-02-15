@@ -29,6 +29,7 @@ export const getAllProductsApi = async (
 export const getProductByCategoryApi = async (
   page = queryParams.PAGE,
   limit = queryParams.LIMIT,
+  sort = queryParams.SORT,
   order = queryParams.ORDER,
   query = "",
   category = ""
@@ -45,7 +46,7 @@ export const getProductByCategoryApi = async (
     res = await axios.get(
       `${
         import.meta.env.VITE_BASE_URL
-      }/product/category/${category}?page=${page}&limit=${limit}&order=${order}`
+      }/product/category/${category}?page=${page}&limit=${limit}&sort=${sort}&order=${order}`
     );
   }
 

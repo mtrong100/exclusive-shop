@@ -1,9 +1,8 @@
 import playstation5 from "../assets/images/playstation5.png";
 import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { queryParams } from "@/constanst";
-import { useNavigate } from "react-router-dom";
+import { ChevronLeft, ChevronRight, ListFilter } from "lucide-react";
+import { queryParams, sortOrder, sortProductType } from "@/constanst";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import useOnchange from "@/hooks/useOnchange";
 import useDebounce from "@/hooks/useDebounce";
@@ -16,14 +15,21 @@ import ReactPaginate from "react-paginate";
 import CategoryCombobox from "./admin/category/CategoryCombobox";
 import Searchbox from "@/components/Searchbox";
 import ProductList from "@/modules/product/ProductList";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import Checkbox from "@/components/Checkbox";
+import { TSortOrder } from "@/types/general-types";
 
 const Shop = () => {
-  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { isLoading, products } = useAppSelector((state) => state.product);
 
   const [category, setCategory] = useState<string>("");
-  const [order, setOrder] = useState("desc");
+  const [order, setOrder] = useState<string>("desc");
+  const [sort, setSort] = useState<string>("name");
   const [nextPage, setNextPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [currentPage, setCurrentPage] = useState<number>(0);
@@ -42,6 +48,7 @@ const Shop = () => {
           data = await getProductByCategoryApi(
             nextPage,
             queryParams.LIMIT,
+            sort,
             order,
             searchQuery,
             category
@@ -50,7 +57,7 @@ const Shop = () => {
           data = await getAllProductsApi(
             nextPage,
             queryParams.LIMIT,
-            queryParams.SORT,
+            sort,
             order,
             searchQuery
           );
@@ -66,7 +73,7 @@ const Shop = () => {
       }
     }
     fetchData();
-  }, [category, dispatch, nextPage, order, searchQuery]);
+  }, [category, dispatch, nextPage, order, searchQuery, sort]);
 
   // CLICK PAGE
   const handlePageClick = (event: { selected: number }) => {
@@ -112,6 +119,57 @@ const Shop = () => {
         </div>
 
         <Searchbox queryValue={value} handleSearch={handleChange} />
+
+        <Popover>
+          <PopoverTrigger asChild>
+            <span className="flex items-center justify-center w-[80px] h-[50px] rounded-sm bg-muted hover:bg-gray-200">
+              <ListFilter size={25} />
+            </span>
+          </PopoverTrigger>
+          <PopoverContent className="absolute -right-5 w-[200px] rounded-md p-1 z-10">
+            <div className="p-3 flex flex-col gap-3">
+              <section>
+                <h1 className="text-xl font-bold">Filter</h1>
+                <ul className="mt-2 flex flex-col gap-3">
+                  {sortProductType.map((item: TSortOrder) => (
+                    <li
+                      key={item.title}
+                      onClick={() => setSort(item.value)}
+                      className="flex items-center gap-3"
+                    >
+                      {sort === item.value ? (
+                        <Checkbox type="checked" />
+                      ) : (
+                        <Checkbox />
+                      )}
+                      <p className="cursor-default">{item.title}</p>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+
+              <section>
+                <h1 className="text-xl font-bold">Order</h1>
+                <ul className="mt-2 flex flex-col gap-3">
+                  {sortOrder.map((item: TSortOrder) => (
+                    <li
+                      key={item.title}
+                      onClick={() => setOrder(item.value)}
+                      className="flex items-center gap-3"
+                    >
+                      {order === item.value ? (
+                        <Checkbox type="checked" />
+                      ) : (
+                        <Checkbox />
+                      )}
+                      <p className="cursor-default">{item.title}</p>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
 
       <div>

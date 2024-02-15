@@ -2,8 +2,8 @@ import TitleSection from "@/components/TitleSection";
 import Checkbox from "@/components/Checkbox";
 import CategoryTable from "@/modules/category/CategoryTable";
 import { useEffect, useState } from "react";
-import { TSortType } from "@/types/general-types";
-import { queryParams, sortTypes } from "@/constanst";
+import { TSortOrder } from "@/types/general-types";
+import { queryParams, sortOrder } from "@/constanst";
 import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { AddNewCategoryModal } from "@/modules/category/AddNewCategoryModal";
 import useOnchange from "@/hooks/useOnchange";
@@ -107,7 +107,7 @@ const ManageCategory = () => {
         <div className="p-3 rounded-md shadow-md border h-fit">
           <h1 className="text-xl font-bold">Sắp xếp</h1>
           <ul className="mt-4 flex flex-col gap-3">
-            {sortTypes.map((item: TSortType) => (
+            {sortOrder.map((item: TSortOrder) => (
               <li
                 key={item.title}
                 onClick={() => setOrder(item.value)}

@@ -17,7 +17,7 @@ import {
   TBrowseCategory,
   TMenuDropdown,
   TNavLink,
-  TSortType,
+  TSortOrder,
 } from "./types/general-types";
 
 export const queryParams = {
@@ -155,26 +155,32 @@ export const cardSum: TBrowseCategory[] = [
   },
 ];
 
-export const demoCategories: string[] = [
-  "electronics",
-  "clothing",
-  "home and kitchen",
-  "books",
-  "sports and outdoors",
-  "beauty and personal care",
-  "toys and games",
-  "automotive",
-  "health and household",
-  "grocery",
-];
-
-export const sortTypes: TSortType[] = [
+export const sortOrder: TSortOrder[] = [
   {
-    title: "Mới nhất",
+    title: "Lastest",
     value: "desc",
   },
   {
-    title: "Cũ nhất",
+    title: "Oldest",
     value: "asc",
+  },
+];
+
+export const sortProductType: TSortOrder[] = [
+  {
+    title: "Name",
+    value: "name",
+  },
+  {
+    title: "Price",
+    value: "price",
+  },
+  {
+    title: "Category",
+    value: "category",
+  },
+  {
+    title: "Sold",
+    value: "sold",
   },
 ];

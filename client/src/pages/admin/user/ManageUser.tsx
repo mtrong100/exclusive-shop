@@ -1,8 +1,8 @@
 import Checkbox from "@/components/Checkbox";
 import TitleSection from "@/components/TitleSection";
-import { sortTypes } from "@/constanst";
+import { sortOrder } from "@/constanst";
 import UserTable from "@/modules/user/UserTable";
-import { TSortType } from "@/types/general-types";
+import { TSortOrder } from "@/types/general-types";
 import { Search } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -35,7 +35,7 @@ const ManageUser = () => {
         <div className="p-3 rounded-md shadow-md border h-fit">
           <h1 className="text-xl font-bold">Sắp xếp</h1>
           <ul className="mt-4 flex flex-col gap-3">
-            {sortTypes.map((item: TSortType) => (
+            {sortOrder.map((item: TSortOrder) => (
               <li
                 key={item.title}
                 onClick={() => setOrder(item.value)}

@@ -16,7 +16,7 @@ export type TMenuDropdown = {
   path: string;
 };
 
-export type TSortType = {
+export type TSortOrder = {
   title: string;
   value: string;
 };
