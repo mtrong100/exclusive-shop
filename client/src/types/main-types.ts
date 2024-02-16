@@ -31,3 +31,27 @@ export type TProduct = {
   createdAt: Date;
   updatedAt: Date;
 };
+
+export type TOrder = {
+  _id: string;
+  orderItems: [
+    {
+      name: string;
+      image: string;
+      price: string;
+      quantity: string;
+      product: string;
+    }
+  ];
+  shippingAddress: {
+    fullName: string;
+    address: string;
+    city: string;
+    phone: string;
+  };
+  paymentMethod: string;
+  total: number;
+  user: string;
+  createdAt: Date;
+  updatedAt: Date;
+};

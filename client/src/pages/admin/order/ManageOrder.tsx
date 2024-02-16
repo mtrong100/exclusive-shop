@@ -1,55 +1,137 @@
 import Checkbox from "@/components/Checkbox";
+import Searchbox from "@/components/Searchbox";
 import TitleSection from "@/components/TitleSection";
-import { sortOrder } from "@/constanst";
+import { queryParams, sortOrder } from "@/constanst";
+import useDebounce from "@/hooks/useDebounce";
+import useOnchange from "@/hooks/useOnchange";
 import OrderTable from "@/modules/order/OrderTable";
 import { TSortOrder } from "@/types/general-types";
-import { Search } from "lucide-react";
-import { useState } from "react";
+import { ChevronLeft, ChevronRight, ListFilter } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@radix-ui/react-popover";
+import ReactPaginate from "react-paginate";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
+import { loadingOrder, storeOrders } from "@/redux/slices/orderSlice";
+import { getAllOrdersApi } from "@/services/orderService";
 
 const ManageOrder = () => {
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const [order, setOrder] = useState("desc");
+  const [order, setOrder] = useState<string>("desc");
+  const [nextPage, setNextPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [currentPage, setCurrentPage] = useState<number>(0);
+  const { value, handleChange } = useOnchange();
+  const searchQuery = useDebounce(value, 500);
+  const { isLoading, orders } = useAppSelector((state) => state.order);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [dispatch, nextPage, order, searchQuery]);
+
+  // FETCH ORDERS
+  async function fetchOrders() {
+    try {
+      dispatch(loadingOrder(true));
+      const token = JSON.parse(localStorage.getItem("EXCLUSIVE_TOKEN") || "");
+      const data = await getAllOrdersApi(
+        token,
+        nextPage,
+        queryParams.LIMIT,
+        order,
+        searchQuery
+      );
+
+      setTotalPages(data?.totalPages);
+      dispatch(storeOrders(data?.docs));
+      dispatch(loadingOrder(false));
+    } catch (error) {
+      console.log(error);
+      dispatch(storeOrders([]));
+      dispatch(loadingOrder(false));
+      setTotalPages(1);
+    }
+  }
+
+  // CLICK PAGE
+  const handlePageClick = (event: { selected: number }) => {
+    setCurrentPage(event.selected);
+    setNextPage(event.selected + 1);
+  };
+
+  // FIX SCROLL BUG
+  useEffect(() => {
+    document.body.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, []);
 
   return (
     <section>
       <TitleSection>Manage order</TitleSection>
 
-      <div className="mt-6 grid grid-cols-[minmax(0,_1fr)_250px] gap-[30px]">
-        <div>
-          {/* SEARCH-BOX */}
-          <div className="flex items-center bg-[#F5F5F5] border rounded-md p-3 w-full">
-            <input
-              type="text"
-              placeholder="What are you looking for?"
-              className="w-full focus:outline-none max-w-full placeholder:text-sm bg-transparent"
-            />
-            <Search className="flex-shrink-0 ml-[15px]" />
-          </div>
-          <ul>
-            <OrderTable />
-          </ul>
-        </div>
+      <div className="mt-6 flex items-center gap-3">
+        <Searchbox
+          handleSearch={handleChange}
+          queryValue={value}
+          placeHolder="Enter order ID..."
+        />
 
-        <div className="p-3 rounded-md shadow-md border h-fit">
-          <h1 className="text-xl font-bold">Sắp xếp</h1>
-          <ul className="mt-4 flex flex-col gap-3">
-            {sortOrder.map((item: TSortOrder) => (
-              <li
-                key={item.title}
-                onClick={() => setOrder(item.value)}
-                className="flex items-center gap-3"
-              >
-                {order === item.value ? (
-                  <Checkbox type="checked" />
-                ) : (
-                  <Checkbox />
-                )}
-                <p className="cursor-default">{item.title}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <Popover>
+          <PopoverTrigger asChild>
+            <span className="flex items-center justify-center w-[60px] h-[50px] rounded-sm bg-muted hover:bg-gray-200">
+              <ListFilter size={25} />
+            </span>
+          </PopoverTrigger>
+          <PopoverContent className="absolute -right-5 w-[190px] rounded-md p-3 z-10 bg-white shadow-md border">
+            <section>
+              <h1 className="text-xl font-bold">Order</h1>
+              <ul className="mt-2 flex flex-col gap-3">
+                {sortOrder.map((item: TSortOrder) => (
+                  <li
+                    key={item.title}
+                    onClick={() => setOrder(item.value)}
+                    className="flex items-center gap-3"
+                  >
+                    {order === item.value ? (
+                      <Checkbox type="checked" />
+                    ) : (
+                      <Checkbox />
+                    )}
+                    <p className="cursor-default">{item.title}</p>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          </PopoverContent>
+        </Popover>
+      </div>
+
+      <ul>
+        {!isLoading && orders?.length === 0 ? (
+          <p className="text-center font-medium my-5 opacity-60">
+            No data found...
+          </p>
+        ) : (
+          <OrderTable />
+        )}
+      </ul>
+
+      {/* react-paginate */}
+      <div className="mt-8 mb-3">
+        <ReactPaginate
+          breakLabel="..."
+          nextLabel={<ChevronRight />}
+          onPageChange={handlePageClick}
+          pageRangeDisplayed={5}
+          pageCount={totalPages}
+          previousLabel={<ChevronLeft />}
+          renderOnZeroPageCount={null}
+          forcePage={currentPage}
+        />
       </div>
     </section>
   );

@@ -14,10 +14,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Eye } from "lucide-react";
-import redConsole from "../../assets/images/red-console.png";
 import { Separator } from "@/components/ui/separator";
+import { TOrder } from "@/types/main-types";
+import { displayPrice } from "@/utils/helper";
+import { format } from "timeago.js";
 
-export function OrderDetailModal() {
+export function OrderDetailModal({ order }: { order: TOrder }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -25,11 +27,14 @@ export function OrderDetailModal() {
       </DialogTrigger>
       <DialogContent className="max-w-3xl">
         <DialogHeader>
-          <DialogTitle className="text-2xl">Order: 87384721</DialogTitle>
+          <DialogTitle className="text-2xl">Order: #{order?._id}</DialogTitle>
         </DialogHeader>
         <main>
           <div className="text-lg">
-            From: <span className="font-semibold text-primary">Crowbar</span>
+            From:{" "}
+            <span className="font-semibold text-primary">
+              {order?.shippingAddress?.fullName}
+            </span>
           </div>
 
           <div className="mt-3">
@@ -43,25 +48,29 @@ export function OrderDetailModal() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {Array(2)
-                  .fill(0)
-                  .map((item, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="font-medium capitalize">
-                        <div className="flex items-center gap-4">
-                          <img
-                            src={redConsole}
-                            alt="redConsole"
-                            className="w-[50px] h-[50px] object-contain"
-                          />
-                          <p className="text-sm">Havic HV G-92 Gamepad</p>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-center">2</TableCell>
-                      <TableCell className="text-center">89.99$</TableCell>
-                      <TableCell className="text-right">12/3/2023</TableCell>
-                    </TableRow>
-                  ))}
+                {order?.orderItems?.map((item) => (
+                  <TableRow key={item?.name}>
+                    <TableCell className="font-medium capitalize">
+                      <div className="flex items-center gap-4">
+                        <img
+                          src={item?.image}
+                          alt={item?.name}
+                          className="w-[50px] h-[50px] object-contain flex-shrink-0"
+                        />
+                        <p className="line-clamp-2 text-sm">{item?.name}</p>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {item?.quantity}
+                    </TableCell>
+                    <TableCell className="text-center text-green-600 font-medium">
+                      {displayPrice(Number(item?.price))}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {format(order?.createdAt)}
+                    </TableCell>
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
           </div>
@@ -69,7 +78,7 @@ export function OrderDetailModal() {
           <Separator className="my-4" />
 
           <div className="flex justify-end text-lg font-medium">
-            Total: $90.99
+            Total: {displayPrice(order?.total)}
           </div>
         </main>
       </DialogContent>

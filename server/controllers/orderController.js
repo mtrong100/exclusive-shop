@@ -2,6 +2,7 @@ import Order from "../models/orderModel.js";
 import Product from "../models/productModel.js";
 import { errorHandler } from "../utils/errorHandler.js";
 import { sendEmailCompletePurchase } from "../services/sendEmail.js";
+import { queryParams } from "../utils/constants.js";
 
 export const createOrder = async (req, res, next) => {
   const { orderItems, shippingAddress, total } = req.body;
@@ -52,23 +53,29 @@ export const getAllOrders = async (req, res, next) => {
   const {
     page = queryParams.PAGE,
     limit = queryParams.LIMIT,
-    sort = queryParams.SORT,
     order = queryParams.ORDER,
+    query,
   } = req.query;
 
   try {
+    const filter = {};
+
+    if (query) {
+      filter._id = new RegExp(query, "i");
+    }
+
     const options = {
       page,
       limit,
       sort: {
-        [sort]: order === "asc" ? 1 : -1,
+        createdAt: order === "asc" ? 1 : -1,
       },
     };
 
-    const data = await Order.paginate({}, options);
+    const data = await Order.paginate(filter, options);
 
     if (!data.docs || data.docs.length === 0) {
-      next(errorHandler(404, "Users not found"));
+      next(errorHandler(404, "Orders not found"));
     }
 
     return res.status(200).json(data);

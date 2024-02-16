@@ -9,8 +9,8 @@ import {
 } from "../controllers/orderController.js";
 const router = express.Router();
 
+router.get("/all", verifyAdmin, getAllOrders);
 router.post("/create", verifyToken, createOrder);
-router.get("/orders", verifyAdmin, getAllOrders);
 router.get("/my-orders/:id", verifyToken, getUserOrders);
 router.get("/:id", verifyToken, getOrderDetail);
 
