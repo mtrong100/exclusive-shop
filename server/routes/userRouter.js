@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  deleteUser,
   getAllUsers,
   getUserDetail,
   updateUser,
@@ -11,6 +12,7 @@ const router = express.Router();
 
 router.get("/all", verifyAdmin, getAllUsers);
 router.put("/update/:id", verifyToken, updateUser);
+router.delete("/delete/:id", verifyAdmin, deleteUser);
 router.get("/:id", verifyToken, getUserDetail);
 
 export default router;

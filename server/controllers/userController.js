@@ -1,4 +1,5 @@
 import User from "../models/userModel.js";
+import { queryParams } from "../utils/constants.js";
 import { errorHandler } from "../utils/errorHandler.js";
 
 export const getUserDetail = async (req, res, next) => {
@@ -40,14 +41,52 @@ export const updateUser = async (req, res, next) => {
 };
 
 export const getAllUsers = async (req, res, next) => {
-  try {
-    const users = await User.find();
+  const {
+    page = queryParams.PAGE,
+    limit = queryParams.LIMIT,
+    sort = queryParams.SORT,
+    order = queryParams.ORDER,
+    query,
+  } = req.query;
 
-    if (!users || users.length === 0) {
+  try {
+    const filter = {};
+
+    if (query) {
+      filter.name = new RegExp(query, "i");
+    }
+
+    const options = {
+      page,
+      limit,
+      sort: {
+        [sort]: order === "asc" ? 1 : -1,
+      },
+    };
+
+    const data = await User.paginate(filter, options);
+
+    if (!data.docs || data.docs.length === 0) {
+      next(errorHandler(404, "not found"));
+    }
+
+    return res.status(200).json(data);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteUser = async (req, res, next) => {
+  const { id } = req.params;
+
+  try {
+    const data = await User.findByIdAndDelete(id);
+
+    if (!data) {
       return next(errorHandler(404, "not found"));
     }
 
-    return res.status(200).json(users);
+    return res.status(200).json({ message: "User has been deleted" });
   } catch (error) {
     next(error);
   }

@@ -18,7 +18,7 @@ const PriceDistributionChart = ({ data }: { data: TProduct[] }) => {
     <ResponsiveContainer width="100%" height={400}>
       <LineChart data={sortedData}>
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="name" />
+        <XAxis dataKey="category" />
         <YAxis />
         <Tooltip />
         <Legend />

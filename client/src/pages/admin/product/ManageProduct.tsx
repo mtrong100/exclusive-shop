@@ -12,7 +12,7 @@ import {
   Plus,
   Search,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CategoryCombobox from "../category/CategoryCombobox";
 import useDebounce from "@/hooks/useDebounce";
@@ -28,6 +28,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@radix-ui/react-popover";
+import { DownloadTableExcel } from "react-export-table-to-excel";
 
 const sortProductType: TSortOrder[] = [
   {
@@ -60,7 +61,7 @@ const ManageProduct = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { isLoading, products } = useAppSelector((state) => state.product);
-
+  const productTableRef = useRef<HTMLTableElement | null>(null);
   const [category, setCategory] = useState<string>("");
   const [order, setOrder] = useState<string>("desc");
   const [sort, setSort] = useState<string>("name");
@@ -160,11 +161,11 @@ const ManageProduct = () => {
                   <ListFilter size={25} />
                 </span>
               </PopoverTrigger>
-              <PopoverContent className="absolute -right-5 w-[190px] rounded-md p-1 z-10 bg-white shadow-md border">
+              <PopoverContent className="absolute -right-5 w-[300px] rounded-md p-1 z-10 bg-white shadow-md border">
                 <div className="p-3 flex flex-col gap-3">
                   <section>
                     <h1 className="text-xl font-bold">Filter</h1>
-                    <ul className="mt-2 flex flex-col gap-3">
+                    <ul className="mt-2 grid grid-cols-2 gap-3">
                       {sortProductType.map((item: TSortOrder) => (
                         <li
                           key={item.title}
@@ -201,6 +202,14 @@ const ManageProduct = () => {
                       ))}
                     </ul>
                   </section>
+
+                  <DownloadTableExcel
+                    filename="Product table"
+                    sheet="Product"
+                    currentTableRef={productTableRef.current}
+                  >
+                    <Button className="w-full ">Export to excel</Button>
+                  </DownloadTableExcel>
                 </div>
               </PopoverContent>
             </Popover>
@@ -212,7 +221,7 @@ const ManageProduct = () => {
                 No data found...
               </p>
             ) : (
-              <ProductTable />
+              <ProductTable ref={productTableRef} />
             )}
           </ul>
 

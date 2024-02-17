@@ -102,6 +102,7 @@ const Checkout = () => {
             "success"
           );
           clearCart();
+          navigate("/order");
         } catch (error) {
           console.log("Failed to fetch API ->", error);
           toast.error("Failed to place an order");

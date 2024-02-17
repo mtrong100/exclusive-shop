@@ -13,8 +13,9 @@ import { displayPrice, displayRating } from "@/utils/helper";
 import { Eye, Pencil, Trash } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import { forwardRef } from "react";
 
-const ProductTable = () => {
+const ProductTable = forwardRef<HTMLTableElement>((props, ref) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { products } = useAppSelector((state) => state.product);
@@ -40,7 +41,7 @@ const ProductTable = () => {
   };
 
   return (
-    <Table>
+    <Table ref={ref}>
       <TableHeader>
         <TableRow>
           <TableHead className="w-[300px]">Name</TableHead>
@@ -93,6 +94,6 @@ const ProductTable = () => {
       </TableBody>
     </Table>
   );
-};
+});
 
 export default ProductTable;

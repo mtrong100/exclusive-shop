@@ -15,8 +15,6 @@ const MyOrder = () => {
   const { value, handleChange } = useOnchange();
   const searchQuery = useDebounce(value, 500);
 
-  console.log(myOrders);
-
   useEffect(() => {
     fetchMyOrders();
   }, []);
