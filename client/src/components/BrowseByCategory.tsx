@@ -4,7 +4,7 @@ import TitleSection from "./TitleSection";
 const BrowseByCategory = () => {
   return (
     <div>
-      <TitleSection>Browse By Category</TitleSection>
+      <TitleSection>Our Categories</TitleSection>
 
       {/* CATEGORY-LIST */}
       <ul className="grid grid-cols-6 gap-5 mt-[60px]">

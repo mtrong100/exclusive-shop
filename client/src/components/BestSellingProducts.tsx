@@ -13,14 +13,26 @@ const BestSellingProducts = () => {
   const [productList, setProductList] = useState<TProduct[]>([]);
 
   useEffect(() => {
-    async function fetchData() {
+    fetchProducts();
+  }, []);
+
+  // FETCH BEST SELLING PRODUCTS
+  async function fetchProducts() {
+    try {
       setIsLoading(true);
-      const data = await getAllProductsApi(queryParams.PAGE, 4, "asc");
+      const data = await getAllProductsApi(
+        queryParams.PAGE,
+        queryParams.LIMIT,
+        "sold"
+      );
       setProductList(data?.docs);
       setIsLoading(false);
+    } catch (error) {
+      setProductList([]);
+      console.log("Failed to fetch products ->", error);
+      setIsLoading(false);
     }
-    fetchData();
-  }, []);
+  }
 
   return (
     <div className="mt-20">

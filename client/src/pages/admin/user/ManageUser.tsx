@@ -1,57 +1,56 @@
-import Checkbox from "@/components/Checkbox";
+import Searchbox from "@/components/Searchbox";
 import TitleSection from "@/components/TitleSection";
-import { sortOrder } from "@/constanst";
+import useDebounce from "@/hooks/useDebounce";
+import useOnchange from "@/hooks/useOnchange";
 import UserTable from "@/modules/user/UserTable";
-import { TSortOrder } from "@/types/general-types";
-import { Search } from "lucide-react";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { loadingUsers, storeUsers } from "@/redux/slices/userSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
+import { getAllUsersApi } from "@/services/userService";
+import { useEffect } from "react";
 
 const ManageUser = () => {
-  const navigate = useNavigate();
-  const [order, setOrder] = useState("desc");
+  const dispatch = useAppDispatch();
+  const { value, handleChange } = useOnchange();
+  const searchQuery = useDebounce(value, 500);
+  const { isLoading, users } = useAppSelector((state) => state.user);
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  async function fetchUsers() {
+    try {
+      dispatch(loadingUsers(true));
+      const token = JSON.parse(localStorage.getItem("EXCLUSIVE_TOKEN") || "");
+      const data = await getAllUsersApi(token);
+      dispatch(storeUsers(data));
+    } catch (error) {
+      console.log("Failed to fetch users", error);
+      dispatch(loadingUsers(false));
+      dispatch(storeUsers([]));
+    }
+  }
+
+  // FILTER ORDERS
+  const filterUsers = users.filter((item) =>
+    item.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <section>
       <TitleSection>Manage user</TitleSection>
 
-      <div className="mt-6 grid grid-cols-[minmax(0,_1fr)_250px] gap-[30px]">
-        <div>
-          {/* SEARCH-BOX */}
-          <div className="flex items-center bg-[#F5F5F5] border rounded-md p-3 w-full">
-            <input
-              type="text"
-              placeholder="What are you looking for?"
-              className="w-full focus:outline-none max-w-full placeholder:text-sm bg-transparent"
-            />
-            <Search className="flex-shrink-0 ml-[15px]" />
-          </div>
+      <Searchbox handleSearch={handleChange} queryValue={value} />
 
-          <ul>
-            <UserTable />
-          </ul>
-        </div>
-
-        <div className="p-3 rounded-md shadow-md border h-fit">
-          <h1 className="text-xl font-bold">Sắp xếp</h1>
-          <ul className="mt-4 flex flex-col gap-3">
-            {sortOrder.map((item: TSortOrder) => (
-              <li
-                key={item.title}
-                onClick={() => setOrder(item.value)}
-                className="flex items-center gap-3"
-              >
-                {order === item.value ? (
-                  <Checkbox type="checked" />
-                ) : (
-                  <Checkbox />
-                )}
-                <p className="cursor-default">{item.title}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
+      <ul>
+        {!isLoading && filterUsers?.length === 0 ? (
+          <p className="text-center font-medium my-5 opacity-60">
+            No data found...
+          </p>
+        ) : (
+          <UserTable users={filterUsers} />
+        )}
+      </ul>
     </section>
   );
 };

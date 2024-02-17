@@ -5,9 +5,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { TUser } from "@/types/main-types";
 import { Eye } from "lucide-react";
 
-export function UserDetailModal() {
+export function UserDetailModal({ data }: { data: TUser }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -15,26 +16,26 @@ export function UserDetailModal() {
       </DialogTrigger>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle className="text-2xl">Crowbar</DialogTitle>
+          <DialogTitle className="text-2xl">{data?.name}</DialogTitle>
         </DialogHeader>
         <main>
           <div className="mx-auto flex justify-center">
             <img
-              src="https://source.unsplash.com/random"
-              alt="user-avatar"
+              src={data?.avatar}
+              alt={data?.name}
               className="w-[100px] h-[100px] object-cover rounded-full"
             />
           </div>
 
           <ul className="grid grid-cols-1 gap-2 items-center mt-5">
             <div className="py-2 px-4 rounded-md bg-slate-100 text-sm border">
-              crowbar873@gmail
+              {data?.email}
             </div>
             <div className="py-2 px-4 rounded-md bg-slate-100 text-sm border">
-              73/B Lebanon
+              {data?.address || "Not update yet"}
             </div>
             <div className="py-2 px-4 rounded-md bg-slate-100 text-sm border">
-              08273512
+              {data?.phone || "Not update yet"}
             </div>
           </ul>
         </main>

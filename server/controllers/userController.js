@@ -38,3 +38,17 @@ export const updateUser = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getAllUsers = async (req, res, next) => {
+  try {
+    const users = await User.find();
+
+    if (!users || users.length === 0) {
+      return next(errorHandler(404, "not found"));
+    }
+
+    return res.status(200).json(users);
+  } catch (error) {
+    next(error);
+  }
+};

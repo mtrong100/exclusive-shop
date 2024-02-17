@@ -1,6 +1,14 @@
 import { TUpdateUserRequest } from "@/types/general-types";
 import axios from "axios";
 
+export const getAllUsersApi = async (token: string) => {
+  const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/user/all`, {
+    headers: { token: `Bearer ${token}` },
+  });
+
+  return res.data;
+};
+
 export const getUserDetailApi = async (id: string, token: string) => {
   const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/user/${id}`, {
     headers: { token: `Bearer ${token}` },

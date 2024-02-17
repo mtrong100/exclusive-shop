@@ -4,6 +4,8 @@ export type TUser = {
   avatar: string;
   email: string;
   token: string;
+  address?: string;
+  phone?: string;
   isAdmin: boolean;
   favorites: string[];
   createdAt: Date;
