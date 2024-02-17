@@ -7,12 +7,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { OrderDetailModal } from "./OrderDetailModal";
-import { useAppSelector } from "@/redux/store";
 import { displayPrice } from "@/utils/helper";
+import { TOrder } from "@/types/main-types";
 
-const OrderTable = () => {
-  const { orders } = useAppSelector((state) => state.order);
-
+const OrderTable = ({ orders = [] }: { orders: TOrder[] }) => {
   return (
     <Table>
       <TableHeader>

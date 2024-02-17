@@ -54,16 +54,9 @@ export const getAllOrders = async (req, res, next) => {
     page = queryParams.PAGE,
     limit = queryParams.LIMIT,
     order = queryParams.ORDER,
-    query,
   } = req.query;
 
   try {
-    const filter = {};
-
-    if (query) {
-      filter._id = new RegExp(query, "i");
-    }
-
     const options = {
       page,
       limit,
@@ -72,7 +65,7 @@ export const getAllOrders = async (req, res, next) => {
       },
     };
 
-    const data = await Order.paginate(filter, options);
+    const data = await Order.paginate({}, options);
 
     if (!data.docs || data.docs.length === 0) {
       next(errorHandler(404, "Orders not found"));

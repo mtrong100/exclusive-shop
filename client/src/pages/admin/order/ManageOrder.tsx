@@ -8,7 +8,6 @@ import OrderTable from "@/modules/order/OrderTable";
 import { TSortOrder } from "@/types/general-types";
 import { ChevronLeft, ChevronRight, ListFilter } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   Popover,
   PopoverContent,
@@ -21,7 +20,6 @@ import { getAllOrdersApi } from "@/services/orderService";
 
 const ManageOrder = () => {
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
   const [order, setOrder] = useState<string>("desc");
   const [nextPage, setNextPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
@@ -43,10 +41,8 @@ const ManageOrder = () => {
         token,
         nextPage,
         queryParams.LIMIT,
-        order,
-        searchQuery
+        order
       );
-
       setTotalPages(data?.totalPages);
       dispatch(storeOrders(data?.docs));
       dispatch(loadingOrder(false));
@@ -57,6 +53,9 @@ const ManageOrder = () => {
       setTotalPages(1);
     }
   }
+
+  // FILTER ORDERS
+  const filterOrders = orders.filter((item) => item?._id.includes(searchQuery));
 
   // CLICK PAGE
   const handlePageClick = (event: { selected: number }) => {
@@ -111,12 +110,12 @@ const ManageOrder = () => {
       </div>
 
       <ul>
-        {!isLoading && orders?.length === 0 ? (
+        {!isLoading && filterOrders?.length === 0 ? (
           <p className="text-center font-medium my-5 opacity-60">
             No data found...
           </p>
         ) : (
-          <OrderTable />
+          <OrderTable orders={filterOrders} />
         )}
       </ul>
 

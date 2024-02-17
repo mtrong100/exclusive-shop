@@ -36,6 +36,9 @@ export function OrderDetailModal({ order }: { order: TOrder }) {
               {order?.shippingAddress?.fullName}
             </span>
           </div>
+          <div>
+            Date: <span>{format(order?.createdAt)}</span>
+          </div>
 
           <div className="mt-3">
             <Table>
@@ -44,7 +47,6 @@ export function OrderDetailModal({ order }: { order: TOrder }) {
                   <TableHead className="w-[300px]">Product</TableHead>
                   <TableHead className="text-center">Quantity</TableHead>
                   <TableHead className="text-center">Price</TableHead>
-                  <TableHead className="text-right">Date</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -65,9 +67,6 @@ export function OrderDetailModal({ order }: { order: TOrder }) {
                     </TableCell>
                     <TableCell className="text-center text-green-600 font-medium">
                       {displayPrice(Number(item?.price))}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {format(order?.createdAt)}
                     </TableCell>
                   </TableRow>
                 ))}
