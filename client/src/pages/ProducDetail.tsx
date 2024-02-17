@@ -5,7 +5,7 @@ import { Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TitleSection from "@/components/TitleSection";
 import useGetProductDetail from "@/modules/product/useGetProductDetail";
-import { displayStar } from "@/utils/helper";
+import { displayStar, initFacebookSDK } from "@/utils/helper";
 import { useCart } from "@/components/cart-context";
 import { toast } from "sonner";
 import { favoriteProductApi } from "@/services/productService";
@@ -50,6 +50,10 @@ const ProducDetail = () => {
       toast.error("Failed to favorite product");
     }
   };
+
+  useEffect(() => {
+    initFacebookSDK();
+  }, []);
 
   // FIX SCROLL BUG
   useEffect(() => {
@@ -141,6 +145,15 @@ const ProducDetail = () => {
             )}
           </div>
         </div>
+      </div>
+
+      <div className="mt-6">
+        <div
+          className="fb-comments"
+          data-href="https://developers.facebook.com/docs/plugins/comments#configurator"
+          data-width="1150"
+          data-numposts="5"
+        ></div>
       </div>
 
       {/* Related products */}

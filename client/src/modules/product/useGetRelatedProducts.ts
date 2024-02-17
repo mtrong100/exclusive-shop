@@ -14,6 +14,7 @@ export default function useGetRelatedProducts(category: string) {
         const res = await getProductByCategoryApi(
           queryParams.PAGE,
           queryParams.LIMIT,
+          queryParams.SORT,
           queryParams.ORDER,
           "",
           category
