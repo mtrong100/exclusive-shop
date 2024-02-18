@@ -60,18 +60,18 @@ export const initFacebookSDK = () => {
   if ((window as any).FB) {
     (window as any).FB.XFBML.parse();
   }
-  let locale: string = "vi_VN";
+  let locale: any = "vi_VN";
   (window as any).fbAsyncInit = function () {
     (window as any).FB.init({
-      appId: import.meta.env.VITE_FB_APP_ID as string,
+      appId: import.meta.env.VITE_FB_APP_ID,
       xfbml: true,
       version: "v2.1",
     });
   };
   // Load the SDK asynchronously
-  (function (d: Document, s: string, id: string) {
-    let js: HTMLScriptElement,
-      fjs: HTMLElement | null = d.getElementsByTagName(s)[0];
+  (function (d: any, s: any, id: any) {
+    let js: any,
+      fjs: any = d.getElementsByTagName(s)[0];
     if (!fjs) return; // Null check
     const parent = fjs.parentNode;
     if (!parent) return; // Null check
