@@ -8,12 +8,8 @@ import NewArrival from "@/components/NewArrival";
 import Service from "@/components/Service";
 import { Separator } from "@/components/ui/separator";
 import { useEffect } from "react";
-import { useAuth } from "@/components/auth-context";
 
 const Home = () => {
-  const { currentUser } = useAuth();
-  // console.log("🚀 ~ Home ~ currentUser:", currentUser);
-
   // FIX SCROLL BUG
   useEffect(() => {
     document.body.scrollIntoView({ behavior: "smooth", block: "start" });

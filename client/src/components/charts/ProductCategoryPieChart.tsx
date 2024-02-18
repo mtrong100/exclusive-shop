@@ -1,5 +1,4 @@
 import { TProduct } from "@/types/main-types";
-import React from "react";
 import {
   BarChart,
   Bar,

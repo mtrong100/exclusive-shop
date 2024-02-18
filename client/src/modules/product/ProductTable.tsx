@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { forwardRef } from "react";
 
-const ProductTable = forwardRef<HTMLTableElement>((props, ref) => {
+const ProductTable = forwardRef<HTMLTableElement>((_, ref) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { products } = useAppSelector((state) => state.product);

@@ -15,7 +15,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { deleteUserApi, getAllUsersApi } from "@/services/userService";
 import { storeUsers } from "@/redux/slices/userSlice";
 
-const UserTable = forwardRef<HTMLTableElement>((props, ref) => {
+const UserTable = forwardRef<HTMLTableElement>((_, ref) => {
   const dispatch = useAppDispatch();
   const { users } = useAppSelector((state) => state.user);
 

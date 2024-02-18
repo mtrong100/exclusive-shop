@@ -32,26 +32,52 @@ export const displayStar = (value: string) => {
   }
 };
 
+// export const initFacebookSDK = () => {
+//   if (window.FB) {
+//     window.FB.XFBML.parse();
+//   }
+//   let locale = "vi_VN";
+//   window.fbAsyncInit = function () {
+//     window.FB.init({
+//       appId: import.meta.env.VITE_FB_APP_ID,
+//       xfbml: true,
+//       version: "v2.1",
+//     });
+//   };
+//   // Load the SDK asynchronously
+//   (function (d, s, id) {
+//     var js,
+//       fjs = d.getElementsByTagName(s)[0];
+//     if (d.getElementById(id)) return;
+//     js = d.createElement(s);
+//     js.id = id;
+//     js.src = `//connect.facebook.net/${locale}/sdk.js`;
+//     fjs.parentNode.insertBefore(js, fjs);
+//   })(document, "script", "facebook-jssdk");
+// };
+
 export const initFacebookSDK = () => {
-  if (window.FB) {
-    window.FB.XFBML.parse();
+  if ((window as any).FB) {
+    (window as any).FB.XFBML.parse();
   }
-  let locale = "vi_VN";
-  window.fbAsyncInit = function () {
-    window.FB.init({
-      appId: import.meta.env.VITE_FB_APP_ID,
+  let locale: string = "vi_VN";
+  (window as any).fbAsyncInit = function () {
+    (window as any).FB.init({
+      appId: import.meta.env.VITE_FB_APP_ID as string,
       xfbml: true,
       version: "v2.1",
     });
   };
   // Load the SDK asynchronously
-  (function (d, s, id) {
-    var js,
-      fjs = d.getElementsByTagName(s)[0];
-    if (d.getElementById(id)) return;
+  (function (d: Document, s: string, id: string) {
+    let js: HTMLScriptElement,
+      fjs: HTMLElement | null = d.getElementsByTagName(s)[0];
+    if (!fjs) return; // Null check
+    const parent = fjs.parentNode;
+    if (!parent) return; // Null check
     js = d.createElement(s);
     js.id = id;
     js.src = `//connect.facebook.net/${locale}/sdk.js`;
-    fjs.parentNode.insertBefore(js, fjs);
+    parent.insertBefore(js, fjs);
   })(document, "script", "facebook-jssdk");
 };
