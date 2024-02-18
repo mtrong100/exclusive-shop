@@ -19,3 +19,4 @@
 
 # Preview 
 - [Click here](https://exclusive-shop-chi.vercel.app/)
+![image](https://github.com/mtrong100/Exclusive-shop/assets/94778246/f23da5ef-09a0-4932-9f2a-1f1fd38df43a)
