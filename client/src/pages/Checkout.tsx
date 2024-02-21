@@ -15,13 +15,14 @@ import { useAuth } from "@/components/auth-context";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { COUPON_CODE } from "@/constanst";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useCart } from "@/components/cart-context";
 import { displayPrice } from "@/utils/helper";
 import Checkbox from "@/components/Checkbox";
 import { createOrderApi } from "@/services/orderService";
 import Swal from "sweetalert2";
 import { Loader2 } from "lucide-react";
+import StripeCheckout from "react-stripe-checkout";
 
 // ZOD VALIDATION
 const formSchema = z.object({
@@ -112,6 +113,37 @@ const Checkout = () => {
     });
   }
 
+  // PURCHASE WITH CARD
+  const stripePayment = async () => {
+    const values = form.getValues();
+
+    if (!(values.fullName && values.phone && values.email && values.address)) {
+      toast.error("You forgot to fill in the form");
+      return;
+    }
+
+    try {
+      const token = JSON.parse(localStorage.getItem("EXCLUSIVE_TOKEN") || "");
+      const total = calculatePurchase();
+
+      const request = {
+        shippingAddress: {
+          ...values,
+        },
+        orderItems: cart,
+        paymentMethod: "Pay with card",
+        total,
+        user: currentUser?._id,
+      };
+
+      await createOrderApi(token, request);
+      clearCart();
+    } catch (error) {
+      toast.error("Failed to payment with card");
+      console.log("Failed to payment with card", error);
+    }
+  };
+
   // APPLY COUPON CODE
   const handleApplyCouponCode = () => {
     if (!couponCode) {
@@ -133,6 +165,11 @@ const Checkout = () => {
     setTotalPurchase(total);
     setCouponApplied(true);
   };
+
+  // FIX SCROLL BUG
+  useEffect(() => {
+    document.body.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, []);
 
   return (
     <section className="mt-[80px] mb-[140px]">
@@ -291,17 +328,28 @@ const Checkout = () => {
                 </Button>
               </div>
 
-              {/* SUBMIT BUYING PRODUCTS */}
-              <Button
-                disabled={loadingPayment}
-                type="submit"
-                className="h-[50px] w-full mt-[32px]"
-              >
-                {loadingPayment && (
-                  <Loader2 className="mr-2 h-6 w-6 animate-spin" />
-                )}
-                Place an order
-              </Button>
+              <div className="mt-[32px] space-y-3">
+                <StripeCheckout
+                  token={stripePayment}
+                  stripeKey="pk_test_51OmAzrG1T7kyPILea5z6uMUN5VoCKA4yOluRVCMezmlcHYQnMIs7djqN1mmiWbDoFmyt4sCVqlN69H6MekMafLr900ocV4xdiu"
+                  name="Exclusive-shop"
+                  email={currentUser?.email}
+                  amount={calculatePurchase() * 100}
+                  description="Payment with Stripe"
+                ></StripeCheckout>
+
+                {/* SUBMIT BUYING PRODUCTS */}
+                <Button
+                  disabled={loadingPayment}
+                  type="submit"
+                  className="h-[50px] w-full "
+                >
+                  {loadingPayment && (
+                    <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+                  )}
+                  Place an order
+                </Button>
+              </div>
             </section>
           </div>
         </form>

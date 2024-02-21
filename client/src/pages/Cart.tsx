@@ -13,6 +13,7 @@ import { useAuth } from "@/components/auth-context";
 import { toast } from "sonner";
 import { useCart } from "@/components/cart-context";
 import { displayPrice } from "@/utils/helper";
+import { useEffect } from "react";
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -34,6 +35,11 @@ const Cart = () => {
       navigate("/checkout");
     }
   };
+
+  // FIX SCROLL BUG
+  useEffect(() => {
+    document.body.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, []);
 
   return (
     <section className="mt-[80px] mb-[140px]">

@@ -28,7 +28,7 @@ const Header = () => {
   };
 
   return (
-    <header className="p-5 border-b max-w-[1920px] mx-auto">
+    <header className="p-5 border-b max-w-[1920px] mx-auto sticky top-0 bg-white z-50">
       <div className="w-full max-w-[1190px] mx-auto flex items-center justify-between">
         {/* LOGO */}
         <Link to="/" className="font-bold text-3xl">

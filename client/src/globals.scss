@@ -68,6 +68,13 @@
 }
 
 @layer utilities {
+  .StripeCheckout {
+    @apply w-full h-[50px];
+    span {
+      background-image: none !important;
+      box-shadow: none !important;
+    }
+  }
   .custom-scrollbar::-webkit-scrollbar {
     width: 5px;
   }

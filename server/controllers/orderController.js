@@ -78,16 +78,29 @@ export const getAllOrders = async (req, res, next) => {
 };
 
 export const getUserOrders = async (req, res, next) => {
+  const {
+    page = queryParams.PAGE,
+    limit = queryParams.LIMIT,
+    order = queryParams.ORDER,
+  } = req.query;
   const userId = req.params.id;
 
   try {
-    const orders = await Order.find({ user: { $eq: userId } });
+    const options = {
+      page,
+      limit,
+      sort: {
+        createdAt: order === "asc" ? 1 : -1,
+      },
+    };
 
-    if (!orders || orders.length === 0) {
+    const data = await Order.paginate({ user: userId }, options);
+
+    if (!data.docs || data.docs.length === 0) {
       next(errorHandler(404, "Orders not found"));
     }
 
-    return res.status(200).json(orders);
+    return res.status(200).json(data);
   } catch (error) {
     next(error);
   }

@@ -18,8 +18,9 @@ const Banner = () => {
             Up to 10% off Voucher
           </h1>
           <p>
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Beatae
-            quis laborum ad, laudantium alias repellendus ducimus sint, dolorem
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quod quidem
+            inventore ullam fugit sint qui ad, excepturi commodi in earum magnam
+            sit dignissimos minima rerum! Dolorem veniam modi expedita vitae.
           </p>
 
           <div className="font-semibold flex items-center gap-2 mt-3">
