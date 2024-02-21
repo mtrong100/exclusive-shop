@@ -49,6 +49,7 @@ const Checkout = () => {
   const [checkPayment, setCheckPayment] = useState<boolean>(false);
   const { cart, calculateSubTotal, calculatePurchase, clearCart } = useCart();
   const [loadingPayment, setLoadingPayment] = useState<boolean>(false);
+  const [loadingStripe, setLoadingStripe] = useState<boolean>(false);
 
   // REACT-HOOK-FORM
   const form = useForm<z.infer<typeof formSchema>>({
@@ -123,6 +124,7 @@ const Checkout = () => {
     }
 
     try {
+      setLoadingStripe(true);
       const token = JSON.parse(localStorage.getItem("EXCLUSIVE_TOKEN") || "");
       const total = calculatePurchase();
 
@@ -138,9 +140,11 @@ const Checkout = () => {
 
       await createOrderApi(token, request);
       clearCart();
+      setLoadingStripe(false);
     } catch (error) {
       toast.error("Failed to payment with card");
       console.log("Failed to payment with card", error);
+      setLoadingStripe(false);
     }
   };
 
@@ -329,20 +333,36 @@ const Checkout = () => {
               </div>
 
               <div className="mt-[32px] space-y-3">
-                <StripeCheckout
-                  token={stripePayment}
-                  stripeKey="pk_test_51OmAzrG1T7kyPILea5z6uMUN5VoCKA4yOluRVCMezmlcHYQnMIs7djqN1mmiWbDoFmyt4sCVqlN69H6MekMafLr900ocV4xdiu"
-                  name="Exclusive-shop"
-                  email={currentUser?.email}
-                  amount={calculatePurchase() * 100}
-                  description="Payment with Stripe"
-                ></StripeCheckout>
+                {loadingStripe ? (
+                  <Button
+                    disabled
+                    className="h-[50px] w-full font-bold cursor-not-allowed"
+                    style={{
+                      background:
+                        "linear-gradient(rgb(40, 160, 229), rgb(1, 94, 148))",
+                    }}
+                  >
+                    {loadingStripe && (
+                      <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+                    )}
+                    Pay with card
+                  </Button>
+                ) : (
+                  <StripeCheckout
+                    token={stripePayment}
+                    stripeKey="pk_test_51OmAzrG1T7kyPILea5z6uMUN5VoCKA4yOluRVCMezmlcHYQnMIs7djqN1mmiWbDoFmyt4sCVqlN69H6MekMafLr900ocV4xdiu"
+                    name="Exclusive-shop"
+                    email={currentUser?.email}
+                    amount={calculatePurchase() * 100}
+                    description="Payment with Stripe"
+                  ></StripeCheckout>
+                )}
 
                 {/* SUBMIT BUYING PRODUCTS */}
                 <Button
                   disabled={loadingPayment}
                   type="submit"
-                  className="h-[50px] w-full "
+                  className="h-[50px] w-full font-bold"
                 >
                   {loadingPayment && (
                     <Loader2 className="mr-2 h-6 w-6 animate-spin" />
